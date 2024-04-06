@@ -2,10 +2,9 @@
 
 [![npm](https://img.shields.io/npm/v/koishi-plugin-adapter-kritor?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-adapter-kritor)
 
-kritor adapter for koishi
+Kritor protocol adapter for [Koishi](https://koishi.chat).
 
-开发中，欢迎 pr !
-
+开发中，欢迎 PR !
 
 ## 已知问题
 
