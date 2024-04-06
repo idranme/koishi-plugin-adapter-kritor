@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./src/kritor/protos ./ --outDir=./src/generated/ src/kritor/protos/*/*.proto src/kritor/protos/*/*.proto",
-    "build": "npm run build:proto && npx tsc -b && dumble"
+    "build": "npm run build:proto && tsc -b && esbuild src/index.ts --outfile=lib/index.js --bundle --platform=node --target=es2022 --external:koishi"
   },
   "license": "MIT",
   "repository": {
@@ -34,14 +34,11 @@
     "koishi": "^4.17.2"
   },
   "devDependencies": {
-    "dumble": "^0.1.3",
-    "typescript": "^5.4.4",
-    "yml-register": "^1.2.5",
-    "esbuild": "^0.20.2"
-  },
-  "dependencies": {
     "@grpc/grpc-js": "^1.10.6",
-    "@grpc/proto-loader": "^0.7.12"
+    "@grpc/proto-loader": "^0.7.12",
+    "esbuild": "^0.20.2",
+    "typescript": "^5.4.4",
+    "yml-register": "^1.2.5"
   },
   "koishi": {}
 }
