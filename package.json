@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./kritor/protos ./ --outDir=generated/ kritor/protos/*/*.proto kritor/protos/*/*.proto"
+    "build:proto": "cd src && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./kritor/protos ./ --outDir=generated/ kritor/protos/*/*.proto kritor/protos/*/*.proto"
   },
   "license": "MIT",
   "repository": {
