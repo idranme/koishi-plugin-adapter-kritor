@@ -34,11 +34,5 @@
     "@grpc/proto-loader": "^0.7.12"
   },
   "koishi": {
-    "service": {
-      "required": [
-        "http",
-        "server"
-      ]
-    }
   }
 }
