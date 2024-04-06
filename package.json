@@ -1,0 +1,44 @@
+{
+  "name": "koishi-plugin-adapter-kritor",
+  "description": "kritor adapter for koishi",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "scripts": {
+    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./kritor/protos ./ --outDir=generated/ kritor/protos/*/*.proto kritor/protos/*/*.proto"
+  },
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idanran/koishi-plugin-adapter-kritor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/idanran/koishi-plugin-adapter-kritor/issues"
+  },
+  "homepage": "https://github.com/idanran/koishi-plugin-adapter-kritor#readme",
+  "keywords": [
+    "chatbot",
+    "koishi",
+    "plugin",
+    "kritor"
+  ],
+  "peerDependencies": {
+    "koishi": "^4.17.2"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.10.6",
+    "@grpc/proto-loader": "^0.7.12"
+  },
+  "koishi": {
+    "service": {
+      "required": [
+        "http",
+        "server"
+      ]
+    }
+  }
+}

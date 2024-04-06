@@ -1,2 +1,19 @@
 # koishi-plugin-adapter-kritor
-Kritor Protocol Adapter for Koishi
+
+[![npm](https://img.shields.io/npm/v/koishi-plugin-adapter-kritor?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-adapter-kritor)
+
+kritor adapter for koishi
+
+开发中，欢迎 pr !
+
+
+## 已知问题
+
+- 发送语音，视频，图片是空白消息
+- at 和 reply 失效
+
+## 参考与基础
+
+[KarinJS/kritor](https://github.com/KarinJS/kritor)
+
+[KarinJS/kritor-ts](https://github.com/KarinJS/kritor-ts)
