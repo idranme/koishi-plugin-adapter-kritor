@@ -1,6 +1,6 @@
 {
   "name": "koishi-plugin-adapter-kritor",
-  "description": "kritor adapter for koishi",
+  "description": "Kritor Protocol Adapter for Koishi",
   "version": "0.0.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -24,7 +24,10 @@
     "chatbot",
     "koishi",
     "plugin",
-    "kritor"
+    "kritor",
+    "bot",
+    "protocol",
+    "robotics"
   ],
   "peerDependencies": {
     "koishi": "^4.17.2"
