@@ -16,14 +16,8 @@ export default class KritorAdapter<C extends Context> extends Adapter<C, KritorB
         this.initialize()
     }
     async disconnect(bot: KritorBot<C>) {
-        this.bot.client = null
-        this.bot = null
         this.bot.offline()
-    }
-    async stop(bot: KritorBot<C>) {
-        this.bot.client = null
         this.bot = null
-        this.bot.offline()
     }
     async onMessage(message: EventStructure__Output) {
         if (!this.bot)
