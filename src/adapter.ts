@@ -86,7 +86,6 @@ export class Internal {
                 contact.scene = "FRIEND"
                 contact.peer = channelId.replace('private:', '')
             }
-            console.log(contact)
             sendMessage(this.clients, contact, content, 3, (messageId, messageTime) => {
                 resolve({ 'messageId': messageId, 'messageTime': messageTime })
             })
