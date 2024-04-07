@@ -64,16 +64,6 @@ export default class KritorAdapter<C extends Context> extends Adapter<C, KritorB
 export class Internal {
     constructor(private clients: ReturnType<typeof init>) { }
     /**
-     * 发送私信
-     * @param uid
-     * @param content
-     * @param contentType
-     * @returns
-     */
-    async sendPrivateMsg(uid, content, contentType) {
-        
-    }
-    /**
      * 发送消息
      * @param channelId
      * @param content
