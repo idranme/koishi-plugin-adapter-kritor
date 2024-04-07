@@ -40,7 +40,7 @@ namespace KritorBot {
   }
 
   export const Config: Schema<Config> = Schema.intersect([Schema.object({
-    host: Schema.string().default('http://localhost:5700').description('Kritor 服务器地址'),
+    host: Schema.string().default('localhost:5700').description('Kritor 服务器地址'),
     selfId: Schema.string().description(`随便填🤗🤗`).required(),
   }),
 
