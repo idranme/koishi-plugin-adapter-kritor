@@ -66,7 +66,7 @@ async function adaptMessage(message: MessageBody): Promise<Universal.Message> {
  */
 async function messageToElement(bot: KritorBot<Context>, detail: MessageBody) {
     const elements: Element[] = []
-    for (var i of detail.elements) {
+    for (var i of detail.elements ?? []) {
         if (i.text) {
             let text = i.text.text
             elements.push(h.text(text))
@@ -133,7 +133,7 @@ export async function element2Buffer(http: Quester, element: Element): Promise<B
     return Buffer.from(await http.get(src, { responseType: 'arraybuffer' }))
 }
 
-export async function adapterMedia(http:Quester, data: Element_input_data, element: Element): Promise<Element_input> {
+export async function adapterMedia(http: Quester, data: Element_input_data, element: Element): Promise<Element_input> {
     let res = { data: data }
     res[data] = {
         data: 'file',
