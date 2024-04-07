@@ -33,14 +33,12 @@
   "peerDependencies": {
     "koishi": "^4.17.2"
   },
-  "dependencies": {
-    "@grpc/grpc-js": "^1.10.6",
-    "@grpc/proto-loader": "^0.7.12"
-  },
   "devDependencies": {
     "esbuild": "^0.20.2",
     "typescript": "^5.4.4",
-    "yml-register": "^1.2.5"
+    "yml-register": "^1.2.5",
+    "@grpc/grpc-js": "^1.10.6",
+    "@grpc/proto-loader": "^0.7.12"
   },
   "koishi": {}
 }
