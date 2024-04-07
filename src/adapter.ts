@@ -4,6 +4,7 @@ import { EventType } from './generated/kritor/event/EventType'
 import { init, sendMessage, RegisterActiveListener } from './api'
 import { createSession } from './utils'
 import { EventStructure__Output } from './generated/kritor/event/EventStructure'
+import { Contact } from './generated/kritor/common/Contact'
 export default class KritorAdapter<C extends Context> extends Adapter<C, KritorBot<C>> {
     static inject: string[]
     bot: KritorBot<C>
@@ -86,7 +87,13 @@ export class Internal {
      */
     async sendMessage(channelId, content) {
         return new Promise((resolve, reject) => {
-            sendMessage(this.clients, { scene: 'GROUP', peer: channelId }, content, 3, (messageId, messageTime) => {
+            let contact: Contact = { scene: 'GROUP', peer: channelId }
+            if (channelId.startsWith('private:')) {
+                contact.scene = "FRIEND"
+                contact.peer = channelId.replace('private:', '')
+            }
+            console.log(contact)
+            sendMessage(this.clients, contact, content, 3, (messageId, messageTime) => {
                 resolve({ 'messageId': messageId, 'messageTime': messageTime })
             })
         })

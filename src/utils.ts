@@ -23,10 +23,9 @@ export async function createSession(bot: KritorBot<Context>, message: MessageBod
     // const name = session?.event?.message?.member?.name ?? message?.sender?.nick
     //bot.logger.info(`机器人:${yellow}${bot.config.selfId}${reset} 收到消息: 发送者: ${green}${name}${reset} 内容: ${session.event.message.content}`)
     let channelId = message.contact.peer
-    if (!channelId) {
-        channelId = 'private:' + message.sender.uid
+    if (channelId !== message.contact.subPeer) {
+        channelId = 'private:' + channelId
         session.subtype = 'private'
-        session.type = 'private'
     }
     session.userId = message.sender.uid
     session.channelId = channelId
