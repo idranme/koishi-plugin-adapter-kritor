@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./src/kritor/protos ./ --outDir=./src/generated/ ./src/kritor/protos/*/*.proto ./src/kritor/protos/*/*.proto",
+    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./src/kritor/protos ./ --outDir=./src/generated/ ./src/kritor/protos/*/*.proto",
     "build": "npm run build:proto && tsc -b && cpy './src/kritor' './lib/kritor' && esbuild src/index.ts --outfile=lib/index.js --bundle --platform=node --target=es2022 --external:koishi"
   },
   "license": "MIT",
