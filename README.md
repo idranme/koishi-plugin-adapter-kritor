@@ -11,8 +11,6 @@ Kritor protocol adapter for [Koishi](https://koishi.chat).
 - 发送语音，视频，图片是空白消息
 - at 和 reply 失效
 
-## 参考与基础
-
-[KarinJS/kritor](https://github.com/KarinJS/kritor)
+## 参考
 
 [KarinJS/kritor-ts](https://github.com/KarinJS/kritor-ts)
