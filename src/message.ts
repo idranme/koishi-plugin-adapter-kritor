@@ -1,10 +1,12 @@
-import { Context, Element, Messenger } from 'koishi'
-import KritorBot from './bot'
+import { Context, Element, MessageEncoder } from 'koishi'
+import { KritorBot } from './bot'
 import { Element_input } from './type'
 import { adapterMedia } from './utils'
-export class KritorMessenger<C extends Context = Context> extends Messenger<C, KritorBot<C>> {
-    elements: Element_input[] = []
-    addResult(msgId: string) {
+
+export class KritorMessageEncoder<C extends Context = Context> extends MessageEncoder<C, KritorBot<C>> {
+    private elements: Element_input[] = []
+
+    private addResult(msgId: string) {
         if (!msgId)
             return
         const session = this.bot.session()
@@ -12,12 +14,14 @@ export class KritorMessenger<C extends Context = Context> extends Messenger<C, K
         session.messageId = msgId
         session.app.emit(session, 'send', session)
     }
+
     async flush() {
         if (!this.elements) return
         let res = (await this.bot.internal.sendMessage(this.channelId, this.elements)).messageId
         this.addResult(res)
         this.elements = []
     }
+    
     async visit(element: Element) {
         const { type, attrs, children } = element
         switch (type) {

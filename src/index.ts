@@ -1,3 +1,3 @@
-import KritorBot from './bot'
+import { KritorBot } from './bot'
 
 export default KritorBot

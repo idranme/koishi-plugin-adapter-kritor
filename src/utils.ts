@@ -1,5 +1,5 @@
 import { Context, Universal, Element, h, Quester } from 'koishi'
-import KritorBot from './bot'
+import { KritorBot } from './bot'
 import { Element_input, Element_input_data, MessageBody } from './type'
 import { readFileSync } from 'fs'
 import { _kritor_common_Element_ElementType__Output } from './generated/kritor/common/Element'
