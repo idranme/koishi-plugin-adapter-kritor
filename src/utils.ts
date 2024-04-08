@@ -117,20 +117,12 @@ async function messageToElement(bot: KritorBot<Context>, detail: MessageBody) {
  */
 export async function element2Buffer(http: Quester, element: Element): Promise<Buffer> {
     const { attrs } = element
-    const { src, file } = attrs
-    if (!src) return
-    if (src.startsWith('file://')) {
-        const filePath = src.slice(7)
-        return readFileSync(filePath)
+    const { src } = attrs
+    const capture = /^data:([\w/-]+);base64,(.*)$/.exec(src)
+    if (capture?.[2]) {
+        return Buffer.from(capture[2], 'base64')
     }
-    if (src.startsWith('base64://')) {
-        return Buffer.from(src.slice(9), 'base64')
-    }
-    if (src.startsWith('data:')) {
-        const [, mime, base64] = src.match(/^data:([^]+)base64,(.+)$/)
-        return Buffer.from(base64, 'base64')
-    }
-    return Buffer.from(await http.get(src, { responseType: 'arraybuffer' }))
+    return Buffer.from((await http.file(src)).data)
 }
 
 export async function adapterMedia(http: Quester, data: Element_input_data, element: Element): Promise<Element_input> {
