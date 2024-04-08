@@ -4,7 +4,7 @@
 
 Kritor protocol adapter for [Koishi](https://koishi.chat).
 
-开发中，欢迎 PR !
+In development, PR is welcome!
 
 ## 已知问题
 
