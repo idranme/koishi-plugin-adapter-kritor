@@ -30,7 +30,7 @@ export async function createSession(bot: KritorBot<Context>, message: MessageBod
     session.userId = message.sender.uid
     session.channelId = channelId
     session.guildId = channelId
-    session.content = session.event.message?.content
+    session.content = session.event.message?.content ?? ''
     if (session?.event?.member) {
         session.event.member = session.event.message.member
     }
