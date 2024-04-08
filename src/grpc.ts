@@ -1,35 +1,7 @@
 // Fork from https://github.com/KarinJS/kritor-ts
 import * as grpc from '@grpc/grpc-js'
 import * as protoLoader from '@grpc/proto-loader'
-import { ProtoGrpcType as AuthenticationProtoGrpcType } from './generated/authentication'
-import { ProtoGrpcType as CoreProtoGrpcType } from './generated/core'
-import { ProtoGrpcType as CustomizationProtoGrpcType } from './generated/customization'
-import { ProtoGrpcType as DeveloperProtoGrpcType } from './generated/developer'
-import { ProtoGrpcType as EventProtoGrpcType } from './generated/event'
-import { ProtoGrpcType as FriendProtoGrpcType } from './generated/friend'
-import { ProtoGrpcType as GroupProtoGrpcType } from './generated/group'
-import { ProtoGrpcType as GroupFileProtoGrpcType } from './generated/group_file'
-import { ProtoGrpcType as GuildProtoGrpcType } from './generated/guild'
-import { ProtoGrpcType as MessageProtoGrpcType } from './generated/message'
-import { ProtoGrpcType as QsignProtoGrpcType } from './generated/qsign'
-import { ProtoGrpcType as ReverseProtoGrpcType } from './generated/reverse'
-import { ProtoGrpcType as WebProtoGrpcType } from './generated/web'
-
-import { _kritor_authentication_AuthenticateResponse_AuthenticateResponseCode__Output } from './generated/kritor/authentication/AuthenticateResponse'
-import { _kritor_common_Response_ResponseCode__Output } from './generated/kritor/common/Response'
-import { TicketOperationResponseCode__Output } from './generated/kritor/authentication/TicketOperationResponseCode'
-import { EssenceMessageBody__Output } from './generated/kritor/common/EssenceMessageBody'
-import { PushMessageBody__Output } from './generated/kritor/common/PushMessageBody'
-import { EventStructure__Output } from './generated/kritor/event/EventStructure'
-import { ProfileCard__Output } from './generated/kritor/friend/ProfileCard'
-import { FriendInfo__Output } from './generated/kritor/friend/FriendInfo'
-import { GroupInfo__Output } from './generated/kritor/group/GroupInfo'
-import { Folder__Output } from './generated/kritor/file/Folder'
-import { File__Output } from './generated/kritor/file/File'
-import { ForwardMessageBody } from './generated/kritor/common/ForwardMessageBody'
-import { EventType } from './generated/kritor/event/EventType'
-import { Contact } from './generated/kritor/common/Contact'
-import { Element } from './generated/kritor/common/Element'
+import * as types from './types'
 
 function getProtoGrpcType(filename: string, dirs: string[]) {
     const definition = protoLoader.loadSync(filename, { includeDirs: dirs })
@@ -44,19 +16,19 @@ function getClient<Subtype>(constructor: SubtypeConstructor<typeof grpc.Client, 
 }
 
 export function init(host: string, timeout: number = 5000) {
-    const authenticationProtoGrpcType = getProtoGrpcType('auth/authentication.proto', [__dirname + '/kritor/protos']) as AuthenticationProtoGrpcType
-    const coreProtoGrpcType = getProtoGrpcType('core/core.proto', [__dirname + '/kritor/protos']) as CoreProtoGrpcType
-    const customizationProtoGrpcType = getProtoGrpcType('customization/customization.proto', [__dirname + '/kritor/protos']) as CustomizationProtoGrpcType
-    const developerProtoGrpcType = getProtoGrpcType('developer/developer.proto', [__dirname + '/kritor/protos']) as DeveloperProtoGrpcType
-    const eventProtoGrpcType = getProtoGrpcType('event/event.proto', [__dirname + '/kritor/protos']) as EventProtoGrpcType
-    const friendProtoGrpcType = getProtoGrpcType('friend/friend.proto', [__dirname + '/kritor/protos']) as FriendProtoGrpcType
-    const groupProtoGrpcType = getProtoGrpcType('group/group.proto', [__dirname + '/kritor/protos']) as GroupProtoGrpcType
-    const groupFileProtoGrpcType = getProtoGrpcType('file/group_file.proto', [__dirname + '/kritor/protos']) as GroupFileProtoGrpcType
-    const guildProtoGrpcType = getProtoGrpcType('guild/guild.proto', [__dirname + '/kritor/protos']) as GuildProtoGrpcType
-    const messageProtoGrpcType = getProtoGrpcType('message/message.proto', [__dirname + '/kritor/protos']) as MessageProtoGrpcType
-    const qsignProtoGrpcType = getProtoGrpcType('developer/qsign.proto', [__dirname + '/kritor/protos']) as QsignProtoGrpcType
-    const reverseProtoGrpcType = getProtoGrpcType('reverse/reverse.proto', [__dirname + '/kritor/protos']) as ReverseProtoGrpcType
-    const webProtoGrpcType = getProtoGrpcType('web/web.proto', [__dirname + '/kritor/protos']) as WebProtoGrpcType
+    const authenticationProtoGrpcType = getProtoGrpcType('auth/authentication.proto', [__dirname + '/kritor/protos']) as types.AuthenticationProtoGrpcType
+    const coreProtoGrpcType = getProtoGrpcType('core/core.proto', [__dirname + '/kritor/protos']) as types.CoreProtoGrpcType
+    const customizationProtoGrpcType = getProtoGrpcType('customization/customization.proto', [__dirname + '/kritor/protos']) as types.CustomizationProtoGrpcType
+    const developerProtoGrpcType = getProtoGrpcType('developer/developer.proto', [__dirname + '/kritor/protos']) as types.DeveloperProtoGrpcType
+    const eventProtoGrpcType = getProtoGrpcType('event/event.proto', [__dirname + '/kritor/protos']) as types.EventProtoGrpcType
+    const friendProtoGrpcType = getProtoGrpcType('friend/friend.proto', [__dirname + '/kritor/protos']) as types.FriendProtoGrpcType
+    const groupProtoGrpcType = getProtoGrpcType('group/group.proto', [__dirname + '/kritor/protos']) as types.GroupProtoGrpcType
+    const groupFileProtoGrpcType = getProtoGrpcType('file/group_file.proto', [__dirname + '/kritor/protos']) as types.GroupFileProtoGrpcType
+    const guildProtoGrpcType = getProtoGrpcType('guild/guild.proto', [__dirname + '/kritor/protos']) as types.GuildProtoGrpcType
+    const messageProtoGrpcType = getProtoGrpcType('message/message.proto', [__dirname + '/kritor/protos']) as types.MessageProtoGrpcType
+    const qsignProtoGrpcType = getProtoGrpcType('developer/qsign.proto', [__dirname + '/kritor/protos']) as types.QsignProtoGrpcType
+    const reverseProtoGrpcType = getProtoGrpcType('reverse/reverse.proto', [__dirname + '/kritor/protos']) as types.ReverseProtoGrpcType
+    const webProtoGrpcType = getProtoGrpcType('web/web.proto', [__dirname + '/kritor/protos']) as types.WebProtoGrpcType
 
     const credential = grpc.credentials.createInsecure()
 
@@ -99,6 +71,15 @@ export function init(host: string, timeout: number = 5000) {
     }
 }
 
+export function RegisterActiveListener(client: ReturnType<typeof init>, type: types.EventType, dataCallback: (event: types.EventStructure__Output) => void, endCallback: () => void, errorCallback: (e: Error) => void) {
+    const { eventClient } = client
+    const eventStream = eventClient.RegisterActiveListener({ type })
+    eventStream.on('data', dataCallback)
+    eventStream.on('end', endCallback)
+    eventStream.on('error', errorCallback)
+}
+
+/*
 export function authentication(client: ReturnType<typeof init>, account: string, ticket: string, callback: (code: _kritor_authentication_AuthenticateResponse_AuthenticateResponseCode__Output, msg: string) => void) {
     const { authenticationClient } = client
     authenticationClient.authenticate({ account, ticket }, (err, response) => {
@@ -306,14 +287,6 @@ export function getCmdWhitelist(client: ReturnType<typeof init>, callback: (comm
             callback(response.commands)
         }
     })
-}
-
-export function RegisterActiveListener(client: ReturnType<typeof init>, type: EventType, dataCallback: (event: EventStructure__Output) => void, endCallback: () => void, errorCallback: (e: Error) => void) {
-    const { eventClient } = client
-    const eventStream = eventClient.RegisterActiveListener({ type })
-    eventStream.on('data', dataCallback)
-    eventStream.on('end', endCallback)
-    eventStream.on('error', errorCallback)
 }
 
 export function createFolder(client: ReturnType<typeof init>, groupId: number, name: string, callback: (id: string, usedSpace: number) => void) {
@@ -685,3 +658,4 @@ export function getHttpCookies(client: ReturnType<typeof init>, appid: string, d
         }
     })
 }
+*/

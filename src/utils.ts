@@ -1,9 +1,8 @@
-import { Context, Universal, Element, h, Quester } from 'koishi'
+import { Context, Universal, h } from 'koishi'
 import { KritorBot } from './bot'
-import { Element_input, Element_input_data, MessageBody } from './type'
-import { readFileSync } from 'fs'
-import { _kritor_common_Element_ElementType__Output } from './generated/kritor/common/Element'
+import { PushMessageBody__Output, _kritor_common_Element_ElementType__Output } from './types'
 
+type MessageBody = PushMessageBody__Output
 
 const yellow = '\x1b[33m'
 const reset = '\x1b[0m'
@@ -11,9 +10,6 @@ const green = '\x1b[32m'
 
 /**
  * 创建 session
- * @param bot 
- * @param body 
- * @returns 
  */
 export async function createSession(bot: KritorBot<Context>, message: MessageBody) {
     const session = bot.session()
@@ -65,7 +61,7 @@ async function adaptMessage(message: MessageBody): Promise<Universal.Message> {
  * @returns 
  */
 async function messageToElement(bot: KritorBot<Context>, detail: MessageBody) {
-    const elements: Element[] = []
+    const elements: h[] = []
     for (var i of detail.elements ?? []) {
         if (i.text) {
             let text = i.text.text
@@ -106,30 +102,4 @@ async function messageToElement(bot: KritorBot<Context>, detail: MessageBody) {
     }
 
     return elements
-}
-
-
-/**
- * 将 element 转为 MediaBuffer
- * @param http 
- * @param element 
- * @returns 
- */
-export async function element2Buffer(http: Quester, element: Element): Promise<Buffer> {
-    const { attrs } = element
-    const { src } = attrs
-    const capture = /^data:([\w/-]+);base64,(.*)$/.exec(src)
-    if (capture?.[2]) {
-        return Buffer.from(capture[2], 'base64')
-    }
-    return Buffer.from((await http.file(src)).data)
-}
-
-export async function adapterMedia(http: Quester, data: Element_input_data, element: Element): Promise<Element_input> {
-    let res = { data: data }
-    res[data] = {
-        data: 'file',
-        file: await element2Buffer(http, element)
-    }
-    return res
 }

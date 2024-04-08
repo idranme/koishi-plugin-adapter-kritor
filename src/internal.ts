@@ -1,7 +1,5 @@
-import { init } from './api'
-import { Contact } from './generated/kritor/common/Contact'
-import { Element } from './generated/kritor/common/Element'
-import { SendMessageResponse__Output } from './generated/kritor/message/SendMessageResponse'
+import { init } from './grpc'
+import { Contact, KritorElement, SendMessageResponse__Output } from './types'
 
 export class Internal {
     client: ReturnType<typeof init>
@@ -9,7 +7,7 @@ export class Internal {
     /**
      * 发送消息
      */
-    sendMessage(channelId: string, elements: Element[]) {
+    sendMessage(channelId: string, elements: KritorElement[]) {
         return new Promise<SendMessageResponse__Output>((resolve, reject) => {
             let contact: Contact = { scene: 'GROUP', peer: channelId }
             if (channelId.startsWith('private:')) {
