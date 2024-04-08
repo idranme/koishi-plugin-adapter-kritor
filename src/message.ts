@@ -27,6 +27,7 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
         switch (type) {
             case 'quote':
                 this.elements.push({
+                    type:'REPLY',
                     reply: {
                         messageId: attrs.id
                     }
@@ -34,8 +35,9 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
                 break
             case 'at':
                 this.elements.push({
+                    type: 'AT',
                     at: {
-                        uid: attrs.id
+                        uid: attrs.id.replace('kritor:','')
                     }
                 })
                 break
