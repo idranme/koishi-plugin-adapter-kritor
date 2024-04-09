@@ -1,5 +1,5 @@
 import { init } from './grpc'
-import { Contact, KritorElement, SendMessageResponse__Output } from './types'
+import { Contact, Element as KritorElement, SendMessageResponse__Output } from './types'
 
 export class Internal {
     client: ReturnType<typeof init>

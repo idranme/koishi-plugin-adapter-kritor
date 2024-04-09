@@ -3,7 +3,7 @@ import { KritorAdapter } from './adapter'
 import { KritorMessageEncoder } from './message'
 import { Internal } from './internal'
 
-export class KritorBot<C extends Context> extends Bot<C, KritorBot.Config> {
+export class KritorBot<C extends Context = Context> extends Bot<C, KritorBot.Config> {
   static inject = {
     required: ['http']
   }

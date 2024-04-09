@@ -1,6 +1,6 @@
 import { Context, Element, MessageEncoder } from 'koishi'
 import { KritorBot } from './bot'
-import { KritorElement } from './types'
+import { Element as KritorElement } from './types'
 
 export class KritorMessageEncoder<C extends Context = Context> extends MessageEncoder<C, KritorBot<C>> {
     private elements: KritorElement[] = []
