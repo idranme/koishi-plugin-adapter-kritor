@@ -18,8 +18,8 @@ export class KritorAdapter<C extends Context = Context> extends Adapter<C, Krito
         // debug
         // console.log(`onMessage received: ${JSON.stringify(message, null, 2)}`)
         if (message.message) {
-            let session = await createSession(this.bot, message.message)
-            this.bot.dispatch(session)
+            const session = await createSession(this.bot, message.message)
+            if (session) this.bot.dispatch(session)
         }
     }
     onNotice(message: EventStructure__Output) {
