@@ -30,14 +30,14 @@ export class KritorBot<C extends Context> extends Bot<C, KritorBot.Config> {
 
 export namespace KritorBot {
   export interface Config {
-    host: string
     selfId: string
+    address: string
   }
 
   export const Config: Schema<Config> = Schema.intersect([
     Schema.object({
-      host: Schema.string().description('Kritor 服务器地址。').default('localhost:5700'),
       selfId: Schema.string().description(`机器人的账号。`).required(),
+      address: Schema.string().description('Kritor 服务器地址。').default('localhost:5700'),
     })
   ])
 }

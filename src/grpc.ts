@@ -1,7 +1,7 @@
 // Fork from https://github.com/KarinJS/kritor-ts
 import * as grpc from '@grpc/grpc-js'
 import * as protoLoader from '@grpc/proto-loader'
-import * as types from './types'
+import * as Kritor from './types'
 
 function getProtoGrpcType(filename: string, dirs: string[]) {
     const definition = protoLoader.loadSync(filename, { includeDirs: dirs })
@@ -11,40 +11,40 @@ function getProtoGrpcType(filename: string, dirs: string[]) {
 type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> = {
     new(...args: ConstructorParameters<Constructor>): Subtype
 }
-function getClient<Subtype>(constructor: SubtypeConstructor<typeof grpc.Client, Subtype>, host: string, credential: grpc.ChannelCredentials) {
-    return new constructor(host, credential)
+function getClient<Subtype>(constructor: SubtypeConstructor<typeof grpc.Client, Subtype>, address: string, credential: grpc.ChannelCredentials) {
+    return new constructor(address, credential)
 }
 
-export function init(host: string, timeout: number = 5000) {
-    const authenticationProtoGrpcType = getProtoGrpcType('auth/authentication.proto', [__dirname + '/kritor/protos']) as types.AuthenticationProtoGrpcType
-    const coreProtoGrpcType = getProtoGrpcType('core/core.proto', [__dirname + '/kritor/protos']) as types.CoreProtoGrpcType
-    const customizationProtoGrpcType = getProtoGrpcType('customization/customization.proto', [__dirname + '/kritor/protos']) as types.CustomizationProtoGrpcType
-    const developerProtoGrpcType = getProtoGrpcType('developer/developer.proto', [__dirname + '/kritor/protos']) as types.DeveloperProtoGrpcType
-    const eventProtoGrpcType = getProtoGrpcType('event/event.proto', [__dirname + '/kritor/protos']) as types.EventProtoGrpcType
-    const friendProtoGrpcType = getProtoGrpcType('friend/friend.proto', [__dirname + '/kritor/protos']) as types.FriendProtoGrpcType
-    const groupProtoGrpcType = getProtoGrpcType('group/group.proto', [__dirname + '/kritor/protos']) as types.GroupProtoGrpcType
-    const groupFileProtoGrpcType = getProtoGrpcType('file/group_file.proto', [__dirname + '/kritor/protos']) as types.GroupFileProtoGrpcType
-    const guildProtoGrpcType = getProtoGrpcType('guild/guild.proto', [__dirname + '/kritor/protos']) as types.GuildProtoGrpcType
-    const messageProtoGrpcType = getProtoGrpcType('message/message.proto', [__dirname + '/kritor/protos']) as types.MessageProtoGrpcType
-    const qsignProtoGrpcType = getProtoGrpcType('developer/qsign.proto', [__dirname + '/kritor/protos']) as types.QsignProtoGrpcType
-    const reverseProtoGrpcType = getProtoGrpcType('reverse/reverse.proto', [__dirname + '/kritor/protos']) as types.ReverseProtoGrpcType
-    const webProtoGrpcType = getProtoGrpcType('web/web.proto', [__dirname + '/kritor/protos']) as types.WebProtoGrpcType
+export function init(address: string, timeout: number = 5000) {
+    const authenticationProtoGrpcType = getProtoGrpcType('auth/authentication.proto', [__dirname + '/kritor/protos']) as Kritor.AuthenticationProtoGrpcType
+    const coreProtoGrpcType = getProtoGrpcType('core/core.proto', [__dirname + '/kritor/protos']) as Kritor.CoreProtoGrpcType
+    const customizationProtoGrpcType = getProtoGrpcType('customization/customization.proto', [__dirname + '/kritor/protos']) as Kritor.CustomizationProtoGrpcType
+    const developerProtoGrpcType = getProtoGrpcType('developer/developer.proto', [__dirname + '/kritor/protos']) as Kritor.DeveloperProtoGrpcType
+    const eventProtoGrpcType = getProtoGrpcType('event/event.proto', [__dirname + '/kritor/protos']) as Kritor.EventProtoGrpcType
+    const friendProtoGrpcType = getProtoGrpcType('friend/friend.proto', [__dirname + '/kritor/protos']) as Kritor.FriendProtoGrpcType
+    const groupProtoGrpcType = getProtoGrpcType('group/group.proto', [__dirname + '/kritor/protos']) as Kritor.GroupProtoGrpcType
+    const groupFileProtoGrpcType = getProtoGrpcType('file/group_file.proto', [__dirname + '/kritor/protos']) as Kritor.GroupFileProtoGrpcType
+    const guildProtoGrpcType = getProtoGrpcType('guild/guild.proto', [__dirname + '/kritor/protos']) as Kritor.GuildProtoGrpcType
+    const messageProtoGrpcType = getProtoGrpcType('message/message.proto', [__dirname + '/kritor/protos']) as Kritor.MessageProtoGrpcType
+    const qsignProtoGrpcType = getProtoGrpcType('developer/qsign.proto', [__dirname + '/kritor/protos']) as Kritor.QsignProtoGrpcType
+    const reverseProtoGrpcType = getProtoGrpcType('reverse/reverse.proto', [__dirname + '/kritor/protos']) as Kritor.ReverseProtoGrpcType
+    const webProtoGrpcType = getProtoGrpcType('web/web.proto', [__dirname + '/kritor/protos']) as Kritor.WebProtoGrpcType
 
     const credential = grpc.credentials.createInsecure()
 
-    const authenticationClient = getClient(authenticationProtoGrpcType.kritor.authentication.AuthenticationService, host, credential)
-    const reverseClient = getClient(reverseProtoGrpcType.kritor.reverse.ReverseService, host, credential)
-    const coreClient = getClient(coreProtoGrpcType.kritor.core.CoreService, host, credential)
-    const customizationClient = getClient(customizationProtoGrpcType.kritor.customization.CustomizationService, host, credential)
-    const developerClient = getClient(developerProtoGrpcType.kritor.developer.DeveloperService, host, credential)
-    const qsignClient = getClient(qsignProtoGrpcType.kritor.developer.QsignService, host, credential)
-    const eventClient = getClient(eventProtoGrpcType.kritor.event.EventService, host, credential)
-    const groupFileClient = getClient(groupFileProtoGrpcType.kritor.file.GroupFileService, host, credential)
-    const friendClient = getClient(friendProtoGrpcType.kritor.friend.FriendService, host, credential)
-    const groupClient = getClient(groupProtoGrpcType.kritor.group.GroupService, host, credential)
-    const guildClient = getClient(guildProtoGrpcType.kritor.guild.GuildService, host, credential)
-    const messageClient = getClient(messageProtoGrpcType.kritor.message.MessageService, host, credential)
-    const webClient = getClient(webProtoGrpcType.kritor.web.WebService, host, credential)
+    const authenticationClient = getClient(authenticationProtoGrpcType.kritor.authentication.AuthenticationService, address, credential)
+    const reverseClient = getClient(reverseProtoGrpcType.kritor.reverse.ReverseService, address, credential)
+    const coreClient = getClient(coreProtoGrpcType.kritor.core.CoreService, address, credential)
+    const customizationClient = getClient(customizationProtoGrpcType.kritor.customization.CustomizationService, address, credential)
+    const developerClient = getClient(developerProtoGrpcType.kritor.developer.DeveloperService, address, credential)
+    const qsignClient = getClient(qsignProtoGrpcType.kritor.developer.QsignService, address, credential)
+    const eventClient = getClient(eventProtoGrpcType.kritor.event.EventService, address, credential)
+    const groupFileClient = getClient(groupFileProtoGrpcType.kritor.file.GroupFileService, address, credential)
+    const friendClient = getClient(friendProtoGrpcType.kritor.friend.FriendService, address, credential)
+    const groupClient = getClient(groupProtoGrpcType.kritor.group.GroupService, address, credential)
+    const guildClient = getClient(guildProtoGrpcType.kritor.guild.GuildService, address, credential)
+    const messageClient = getClient(messageProtoGrpcType.kritor.message.MessageService, address, credential)
+    const webClient = getClient(webProtoGrpcType.kritor.web.WebService, address, credential)
 
     const deadline = new Date()
     deadline.setSeconds(deadline.getSeconds() + timeout)
@@ -71,7 +71,7 @@ export function init(host: string, timeout: number = 5000) {
     }
 }
 
-export function RegisterActiveListener(client: ReturnType<typeof init>, type: types.EventType, dataCallback: (event: types.EventStructure__Output) => void, endCallback: () => void, errorCallback: (e: Error) => void) {
+export function RegisterActiveListener(client: ReturnType<typeof init>, type: Kritor.EventType, dataCallback: (event: Kritor.EventStructure__Output) => void, endCallback: () => void, errorCallback: (e: Error) => void) {
     const { eventClient } = client
     const eventStream = eventClient.RegisterActiveListener({ type })
     eventStream.on('data', dataCallback)

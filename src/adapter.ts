@@ -34,12 +34,12 @@ export class KritorAdapter<C extends Context = Context> extends Adapter<C, Krito
     onEnd() {
         this.bot.logger.info('Stream End')
     }
-    onError(e) {
+    onError(e: Error) {
         this.bot.logger.info(e)
     }
     async initialize() {
         try {
-            const clients = init(this.bot.config.host)
+            const clients = init(this.bot.config.address)
             RegisterActiveListener(clients, EventType.EVENT_TYPE_CORE_EVENT, this.onCore.bind(this), this.onEnd.bind(this), this.onError.bind(this))
             RegisterActiveListener(clients, EventType.EVENT_TYPE_MESSAGE, this.onMessage.bind(this), this.onEnd.bind(this), this.onError.bind(this))
             RegisterActiveListener(clients, EventType.EVENT_TYPE_NOTICE, this.onNotice.bind(this), this.onEnd.bind(this), this.onError.bind(this))
