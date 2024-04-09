@@ -5,15 +5,6 @@ import { KritorElement } from './types'
 export class KritorMessageEncoder<C extends Context = Context> extends MessageEncoder<C, KritorBot<C>> {
     private elements: KritorElement[] = []
 
-    private addResult(msgId: string) {
-        if (!msgId)
-            return
-        const session = this.bot.session()
-        this.results.push({ id: msgId })
-        session.messageId = msgId
-        session.app.emit(session, 'send', session)
-    }
-
     private async fetchMedia(type: KritorElement['type'], element: Element): Promise<KritorElement> {
         const { attrs } = element
         const url = attrs.src || attrs.url
@@ -32,8 +23,13 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
 
     async flush() {
         if (!this.elements) return
-        let res = (await this.bot.internal.sendMessage(this.channelId, this.elements)).messageId
-        this.addResult(res)
+        const { messageId, messageTime } = await this.bot.internal.sendMessage(this.channelId, this.elements)
+        const session = this.bot.session()
+        session.event.message.id = messageId
+        // TODO: 验证 messageTime 长度
+        session.event.timestamp = messageTime
+        this.results.push(session.event.message)
+        session.app.emit(session, 'send', session)
         this.elements = []
     }
 
@@ -58,25 +54,30 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
                 break
             case 'text':
                 this.elements.push({
+                    type: 'TEXT',
                     text: {
                         text: attrs.content
                     }
                 })
                 break
             case 'img':
+            case 'image':
                 this.elements.push(await this.fetchMedia('IMAGE', element))
                 break
             case 'video':
                 this.elements.push(await this.fetchMedia('VIDEO', element))
+                await this.flush()
                 break
             case 'audio':
                 this.elements.push(await this.fetchMedia('VOICE', element))
+                await this.flush()
                 break
             // case 'file':
             //     await this.flush()
             //     await this.sendMedia(element)
             //     break
             default:
+                await this.render(children)
                 break
         }
     }
