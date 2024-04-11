@@ -13,8 +13,7 @@ export async function createSession(bot: KritorBot, input: EventStructure__Outpu
 }
 
 function decodeGuildChannelId(contact: Contact__Output) {
-    // 某些 SDK 未实现 contact.scene
-    if (contact.scene === 'FRIEND' || contact.peer !== contact.subPeer) {
+    if (contact.scene ===  1) {
         return [undefined, 'private:' + contact.peer]
     } else {
         return [contact.peer, contact.peer]
@@ -48,43 +47,34 @@ async function decodeMessage(
 function parseElement(elements: Element__Output[]) {
     const result: h[] = []
     for (const v of elements) {
-        let type = v.type as number | string
+        let type = v.type
         if (v.text) {
             type = 0
         }
         switch (type) {
             case 0:
-            case 'TEXT':
                 result.push(h.text(v.text.text))
                 break
             case 1:
-            case 'AT':
                 result.push(h.at(v.at.uid))
                 break
             case 2:
-            case 'FACE':
                 result.push(h.text(JSON.stringify(v.face)))
                 break
             case 3:
-            case 'BUBBLEFACE':
                 break
             case 4:
-            case 'REPLY':
                 result.push(h.quote(v.reply.messageId))
                 break
             case 5:
-            case 'IMAGE':
                 result.push(h.image(v.image.fileUrl))
                 break
             case 6:
-            case 'VOICE':
                 break
             case 7:
-            case 'VIDEO':
                 result.push(h.video(v.video.fileUrl))
                 break
             case 22:
-            case 'FILE':
                 result.push(h.file(v.file.url))
                 break
         }
