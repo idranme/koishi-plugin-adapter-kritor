@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "lib",
+    "outDir": "temp",
     "target": "es2022",
     "module": "commonjs",
     "declaration": true,

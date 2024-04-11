@@ -2,7 +2,7 @@ import { Adapter, Context } from 'koishi'
 import { KritorBot } from './bot'
 import { init, RegisterActiveListener } from './grpc'
 import { createSession } from './utils'
-import { EventStructure__Output, EventType } from './types'
+import { EventStructure, EventType } from './types'
 
 export class KritorAdapter<C extends Context = Context> extends Adapter<C, KritorBot<C>> {
     constructor(ctx: C, private bot: KritorBot<C>) {
@@ -17,7 +17,7 @@ export class KritorAdapter<C extends Context = Context> extends Adapter<C, Krito
         this.bot.offline()
     }
 
-    async onEvent(input: EventStructure__Output){
+    async onEvent(input: EventStructure){
         this.bot.logger.info(`${input.event} received`)
         // debug
         this.bot.logger.info(input)

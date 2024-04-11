@@ -1,5 +1,5 @@
 import { init } from './grpc'
-import { Contact, Element as KritorElement, SendMessageResponse__Output } from './types'
+import { Contact__Output, Element__Output, SendMessageResponse } from './types'
 
 export class Internal {
     client: ReturnType<typeof init>
@@ -7,9 +7,9 @@ export class Internal {
     /**
      * 发送消息
      */
-    sendMessage(channelId: string, elements: KritorElement[]) {
-        return new Promise<SendMessageResponse__Output>((resolve, reject) => {
-            let contact: Contact = { scene: 'GROUP', peer: channelId }
+    sendMessage(channelId: string, elements: Element__Output[]) {
+        return new Promise<SendMessageResponse>((resolve, reject) => {
+            let contact: Contact__Output = { scene: 'GROUP', peer: channelId, _subPeer: 'subPeer' }
             if (channelId.startsWith('private:')) {
                 contact.scene = "FRIEND"
                 contact.peer = channelId.replace('private:', '')

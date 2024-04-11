@@ -2,6 +2,7 @@ lib
 dist
 external
 src/generated
+temp
 
 package-lock.json
 node_modules
