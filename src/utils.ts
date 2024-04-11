@@ -13,8 +13,8 @@ export async function createSession(bot: KritorBot, input: EventStructure__Outpu
 }
 
 function decodeGuildChannelId(contact: Contact__Output) {
-    // TODO: 验证可否使 contact.scene 取代其
-    if (contact.peer !== contact.subPeer) {
+    // 某些 SDK 未实现 contact.scene
+    if (contact.scene === 'FRIEND' || contact.peer !== contact.subPeer) {
         return [undefined, 'private:' + contact.peer]
     } else {
         return [contact.peer, contact.peer]
@@ -38,8 +38,7 @@ async function decodeMessage(
         id: data.sender.uid,
         name: data.sender.nick
     }
-    // TODO: 验证 time 长度
-    payload.timestamp = data.time
+    payload.timestamp = data.time * 1000
     payload.guild = guildId && { id: guildId }
     payload.channel = { id: channelId, type: guildId ? Universal.Channel.Type.TEXT : Universal.Channel.Type.DIRECT }
 
