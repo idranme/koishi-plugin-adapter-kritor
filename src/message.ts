@@ -25,7 +25,8 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
         if (!this.elements) return
         const { messageId, messageTime } = await this.bot.internal.sendMessage(this.channelId, this.elements)
         const session = this.bot.session()
-        session.event.message.id = messageId
+        session.messageId = messageId
+        if (session.event.message?.id) { session.event.message.id = messageId }
         // TODO: 验证 messageTime 长度
         session.event.timestamp = messageTime
         this.results.push(session.event.message)

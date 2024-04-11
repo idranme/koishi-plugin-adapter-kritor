@@ -3,7 +3,7 @@ import { KritorBot } from './bot'
 import { _kritor_common_Element_ElementType__Output, EventStructure__Output, Contact__Output, Element__Output } from './types'
 
 export async function createSession(bot: KritorBot, input: EventStructure__Output) {
-    if (input.event === 'message') {
+    if (input.event || input.message) {
         const session = bot.session()
         session.type = 'message'
         await decodeMessage(bot, input.message, session.event.message = {}, session.event)
@@ -49,31 +49,43 @@ async function decodeMessage(
 function parseElement(elements: Element__Output[]) {
     const result: h[] = []
     for (const v of elements) {
-        const type = v.type as number | string
+        let type = v.type as number | string
+        if (v.text) {
+            type = 0
+        }
         switch (type) {
             case 0:
+            case 'TEXT':
                 result.push(h.text(v.text.text))
                 break
             case 1:
+            case 'AT':
                 result.push(h.at(v.at.uid))
                 break
             case 2:
+            case 'FACE':
                 result.push(h.text(JSON.stringify(v.face)))
                 break
             case 3:
+            case 'BUBBLEFACE':
                 break
             case 4:
+            case 'REPLY':
                 result.push(h.quote(v.reply.messageId))
                 break
             case 5:
+            case 'IMAGE':
                 result.push(h.image(v.image.fileUrl))
                 break
             case 6:
+            case 'VOICE':
                 break
             case 7:
+            case 'VIDEO':
                 result.push(h.video(v.video.fileUrl))
                 break
             case 22:
+            case 'FILE':
                 result.push(h.file(v.file.url))
                 break
         }
