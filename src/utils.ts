@@ -3,7 +3,7 @@ import { KritorBot } from './bot'
 import { _kritor_common_Element_ElementType__Output, EventStructure__Output, Contact__Output, Element__Output } from './types'
 
 export async function createSession(bot: KritorBot, input: EventStructure__Output) {
-    if (input.event || input.message) {
+    if (input.event === 'message' || input.message) {
         const session = bot.session()
         session.type = 'message'
         await decodeMessage(bot, input.message, session.event.message = {}, session.event)
