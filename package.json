@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build:ps": "powershell Copy-Item -Path ./src/kritor/protos -Destination ./lib/kritor/protos -Recurse -Force && yarn build:proto && tsc -b && api-extractor run && esbuild src/index.ts --outfile=lib/index.js --bundle --platform=node --target=es2022 --external:koishi",
-    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./src/kritor/protos ./ --outDir=./src/generated/ ./src/kritor/protos/*/*.proto",
+    "build:proto": "proto-loader-gen-types --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./src/kritor/protos ./ --outDir=./src/generated/ ./src/kritor/protos/*/*.proto",
     "build": "npm run build:proto && tsc -b && api-extractor run && cpy './src/kritor/protos' './lib/kritor/protos' && esbuild src/index.ts --outfile=lib/index.js --bundle --platform=node --target=es2022 --external:koishi"
   },
   "license": "MIT",

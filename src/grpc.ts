@@ -18,7 +18,7 @@ function getClient<Subtype>(constructor: SubtypeConstructor<typeof grpc.Client, 
 export function init(address: string, timeout: number = 5000) {
     const authenticationProtoGrpcType = getProtoGrpcType('auth/authentication.proto', [__dirname + '/kritor/protos']) as Kritor.AuthenticationProtoGrpcType
     const coreProtoGrpcType = getProtoGrpcType('core/core.proto', [__dirname + '/kritor/protos']) as Kritor.CoreProtoGrpcType
-    const customizationProtoGrpcType = getProtoGrpcType('customization/customization.proto', [__dirname + '/kritor/protos']) as Kritor.CustomizationProtoGrpcType
+    const customizationProtoGrpcType = getProtoGrpcType('developer/customization.proto', [__dirname + '/kritor/protos']) as Kritor.CustomizationProtoGrpcType
     const developerProtoGrpcType = getProtoGrpcType('developer/developer.proto', [__dirname + '/kritor/protos']) as Kritor.DeveloperProtoGrpcType
     const eventProtoGrpcType = getProtoGrpcType('event/event.proto', [__dirname + '/kritor/protos']) as Kritor.EventProtoGrpcType
     const friendProtoGrpcType = getProtoGrpcType('friend/friend.proto', [__dirname + '/kritor/protos']) as Kritor.FriendProtoGrpcType
