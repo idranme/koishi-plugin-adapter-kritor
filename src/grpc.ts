@@ -71,7 +71,7 @@ export function init(address: string, timeout: number = 5000) {
     }
 }
 
-export function RegisterActiveListener(client: ReturnType<typeof init>, type: Kritor.EventType, dataCallback: (event: Kritor.EventStructure) => void, endCallback: () => void, errorCallback: (e: Error) => void) {
+export function RegisterActiveListener(client: ReturnType<typeof init>, type: Kritor.EventType, dataCallback: (event: Kritor.EventStructure__Output) => void, endCallback: () => void, errorCallback: (e: Error) => void) {
     const { eventClient } = client
     const eventStream = eventClient.RegisterActiveListener({ type })
     eventStream.on('data', dataCallback)

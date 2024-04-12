@@ -1,11 +1,11 @@
 import { Context, Element, MessageEncoder } from 'koishi'
 import { KritorBot } from './bot'
-import { Element__Output } from './types'
+import { Element as KritorElement } from './types'
 
 export class KritorMessageEncoder<C extends Context = Context> extends MessageEncoder<C, KritorBot<C>> {
-    private elements: Element__Output[] = []
+    private elements: KritorElement[] = []
 
-    private async fetchMedia(type: Element__Output['type'], element: Element): Promise<Element__Output> {
+    private async fetchMedia(type: KritorElement['type'], element: Element): Promise<KritorElement> {
         const { attrs } = element
         const url = attrs.src || attrs.url
         const capture = /^data:([\w/-]+);base64,(.*)$/.exec(url)
@@ -16,8 +16,7 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
             [property]: {
                 data: 'file',
                 file
-            },
-            data: property as 'image' | 'voice' | 'video'
+            }
         }
         return res
     }
@@ -26,7 +25,7 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
         if (!this.elements) return
         const { messageId, messageTime } = await this.bot.internal.sendMessage(this.channelId, this.elements)
         const session = this.bot.session()
-        session.event.message = {}
+        session.event.message  = {}
         session.event.message.id = messageId
         // TODO: 验证 messageTime 长度
         session.event.timestamp = messageTime
@@ -43,18 +42,15 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
                     type: 'REPLY',
                     reply: {
                         messageId: attrs.id
-                    },
-                    data: 'reply'
+                    }
                 })
                 break
             case 'at':
                 this.elements.push({
                     type: 'AT',
                     at: {
-                        uid: attrs.id.replace('kritor:', ''),
-                        _uin: 'uin'
-                    },
-                    data: 'at'
+                        uid: attrs.id.replace('kritor:', '')
+                    }
                 })
                 break
             case 'text':
@@ -62,8 +58,7 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
                     type: 'TEXT',
                     text: {
                         text: attrs.content
-                    },
-                    data: 'text'
+                    }
                 })
                 break
             case 'img':
