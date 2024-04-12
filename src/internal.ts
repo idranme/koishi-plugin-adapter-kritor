@@ -1,8 +1,9 @@
-import { init } from './grpc'
 import { Contact, Element as KritorElement, SendMessageResponse__Output } from './types'
+import { KritorBot } from './bot'
 
 export class Internal {
-    client: ReturnType<typeof init>
+    constructor(private bot: KritorBot) {
+    }
 
     /**
      * 发送消息
@@ -14,7 +15,7 @@ export class Internal {
                 contact.scene = "FRIEND"
                 contact.peer = channelId.replace('private:', '')
             }
-            const { messageClient } = this.client
+            const { messageClient } = this.bot.adapter.client
             messageClient.sendMessage({ contact, elements, retryCount: 3 }, (err, response) => {
                 if (err) {
                     throw err

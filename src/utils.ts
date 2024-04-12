@@ -13,7 +13,7 @@ export async function createSession(bot: KritorBot, input: EventStructure__Outpu
 }
 
 function decodeGuildChannelId(contact: Contact__Output) {
-    if (contact.scene ===  1) {
+    if (contact.scene === 1) {
         return [undefined, 'private:' + contact.peer]
     } else {
         return [contact.peer, contact.peer]

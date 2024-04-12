@@ -10,12 +10,13 @@ export class KritorBot<C extends Context = Context> extends Bot<C, KritorBot.Con
   static MessageEncoder = KritorMessageEncoder
   http: Quester
   internal: Internal
+  declare adapter: KritorAdapter<C, this>
 
   constructor(ctx: C, config: KritorBot.Config) {
     super(ctx, config, 'kritor')
     this.selfId = config.selfId
     this.http = ctx.http
-    this.internal = new Internal()
+    this.internal = new Internal(this)
     ctx.plugin(KritorAdapter, this)
   }
 
