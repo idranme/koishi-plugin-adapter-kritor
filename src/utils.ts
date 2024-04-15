@@ -14,7 +14,8 @@ export async function createSession(bot: KritorBot, input: EventStructure__Outpu
 
 function decodeGuildChannelId(contact: Contact__Output, sender: Sender__Output) {
     if (contact.scene === 1) {
-        return [undefined, 'private:' + sender.uin]
+        const userId = contact.peer === sender.uid ? sender.uin : contact.peer
+        return [undefined, 'private:' + userId]
     } else {
         return [contact.peer, contact.peer]
     }
