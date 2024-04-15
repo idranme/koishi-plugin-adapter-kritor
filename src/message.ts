@@ -6,16 +6,25 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
     private elements: Kritor.Element[] = []
 
     private async fetchMedia(type: Kritor.Element['type'], element: Element): Promise<Kritor.Element> {
-        const { attrs } = element
-        const url = attrs.src || attrs.url
-        const capture = /^data:([\w/-]+);base64,(.*)$/.exec(url)
-        const file = capture?.[2] ? Buffer.from(capture[2], 'base64') : Buffer.from((await this.bot.http.file(url)).data)
+        const url = element.attrs.src || element.attrs.url
+        let data = 'file'
+        let file: Buffer
+        let fileUrl: string
+        if (url.startsWith('http://' || url.startsWith('https://'))) {
+            fileUrl = url
+            data = 'fileUrl'
+        }
+        if (data === 'file') {
+            const capture = /^data:([\w/-]+);base64,(.*)$/.exec(url)
+            file = capture?.[2] ? Buffer.from(capture[2], 'base64') : Buffer.from((await this.bot.http.file(url)).data)
+        }
         const property = typeof type === 'string' ? type.toLowerCase() : type
         const res = {
             type,
             [property]: {
-                data: 'file',
-                file
+                data,
+                file,
+                fileUrl
             }
         }
         return res
