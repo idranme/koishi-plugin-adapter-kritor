@@ -77,6 +77,7 @@ export function RegisterActiveListener(client: ReturnType<typeof init>, type: Kr
     eventStream.on('data', dataCallback)
     eventStream.on('end', endCallback)
     eventStream.on('error', errorCallback)
+    return eventStream
 }
 
 /*

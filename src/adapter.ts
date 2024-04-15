@@ -16,9 +16,14 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
         try {
             const clients = init(this.bot.config.address)
             //RegisterActiveListener(clients, EventType.EVENT_TYPE_CORE_EVENT, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
-            RegisterActiveListener(clients, EventType.EVENT_TYPE_MESSAGE, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
-            RegisterActiveListener(clients, EventType.EVENT_TYPE_NOTICE, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
-            RegisterActiveListener(clients, EventType.EVENT_TYPE_REQUEST, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
+            const messageEventStream = RegisterActiveListener(clients, EventType.EVENT_TYPE_MESSAGE, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
+            const noticeEventStream = RegisterActiveListener(clients, EventType.EVENT_TYPE_NOTICE, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
+            const requestEventStream = RegisterActiveListener(clients, EventType.EVENT_TYPE_REQUEST, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
+            this.ctx.on('dispose', () => {
+                messageEventStream.destroy()
+                noticeEventStream.destroy()
+                requestEventStream.destroy()
+            })
             this.client = clients
             this.bot.online()
         }
