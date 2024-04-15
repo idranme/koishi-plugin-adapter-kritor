@@ -1,11 +1,11 @@
 import { Context, Element, MessageEncoder } from 'koishi'
 import { KritorBot } from './bot'
-import { Element as KritorElement } from './types'
+import * as Kritor from './types'
 
 export class KritorMessageEncoder<C extends Context = Context> extends MessageEncoder<C, KritorBot<C>> {
-    private elements: KritorElement[] = []
+    private elements: Kritor.Element[] = []
 
-    private async fetchMedia(type: KritorElement['type'], element: Element): Promise<KritorElement> {
+    private async fetchMedia(type: Kritor.Element['type'], element: Element): Promise<Kritor.Element> {
         const { attrs } = element
         const url = attrs.src || attrs.url
         const capture = /^data:([\w/-]+);base64,(.*)$/.exec(url)
@@ -22,7 +22,23 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
     }
 
     async flush() {
-        if (!this.elements) return
+        if (this.elements.at(-1)?.text?.text === '\n') {
+            this.elements.pop()
+        }
+        this.elements = this.elements.reduce<Kritor.Element[]>(
+            (acc, cur) => {
+                const last = acc.at(-1)
+                if (typeof cur.text?.text === 'string' && typeof last?.text?.text === 'string') {
+                    last.text.text += cur.text.text
+                } else {
+                    acc.push(cur)
+                }
+                return acc
+            },
+            []
+        )
+        if (this.elements.length === 0) return
+
         const { messageId, messageTime } = await this.bot.internal.sendMessage(this.channelId, this.elements)
         const session = this.bot.session()
         session.event.message ??= {}
@@ -30,6 +46,7 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
         session.event.timestamp = messageTime * 1000
         this.results.push(session.event.message)
         session.app.emit(session, 'send', session)
+
         this.elements = []
     }
 
@@ -48,7 +65,7 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
                 this.elements.push({
                     type: 'AT',
                     at: {
-                        uid: attrs.id.replace('kritor:', '')
+                        uid: attrs.id.startsWith('u_') ? attrs.id : '' // TODO: getUidByUin
                     }
                 })
                 break
@@ -71,6 +88,40 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
             case 'audio':
                 this.elements.push(await this.fetchMedia('VOICE', element))
                 await this.flush()
+                break
+            case 'p': {
+                const prev = this.elements.at(-1)
+                if (prev && prev.text?.text !== '\n') {
+                    this.elements.push({
+                        type: 'TEXT',
+                        text: {
+                            text: '\n'
+                        }
+                    })
+                }
+                await this.render(children)
+                const last = this.elements.at(-1)
+                if (last?.text?.text !== '\n') {
+                    this.elements.push({
+                        type: 'TEXT',
+                        text: {
+                            text: '\n'
+                        }
+                    })
+                }
+                break
+            }
+            case 'br':
+                this.elements.push({
+                    type: 'TEXT',
+                    text: {
+                        text: '\n'
+                    }
+                })
+                break
+            case 'message':
+                await this.flush()
+                await this.render(children, true)
                 break
             // case 'file':
             //     await this.flush()

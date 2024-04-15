@@ -28,7 +28,7 @@ async function decodeMessage(
     payload: Universal.MessageLike = message
 ) {
     message.id = data.messageId
-    message.elements = parseElement(data.elements)
+    message.elements = parseElement(data.elements ?? [])
     message.content = message.elements.join('')
 
     if (!payload) return message
@@ -57,7 +57,7 @@ function parseElement(elements: Element__Output[]) {
                 result.push(h.text(v.text.text))
                 break
             case 1:
-                result.push(h.at(v.at.uid))
+                result.push(h.at(v.at.uin.toString()))
                 break
             case 2:
                 result.push(h.text(JSON.stringify(v.face)))
