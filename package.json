@@ -13,7 +13,7 @@
     "build:dts": "tsc -b && api-extractor run",
     "build:proto": "proto-loader-gen-types --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./src/kritor/protos ./ --outDir=./src/generated/ ./src/kritor/protos/*/*.proto",
     "build-ps": "powershell Copy-Item -Path ./src/kritor/protos -Destination ./lib/kritor/protos -Recurse -Force && yarn build:proto && yarn build:dts && yarn build:cjs",
-    "build": "yarn build:proto && yarn build:dts && cpy './src/kritor/protos' './lib/kritor/protos' && yarn build:cjs"
+    "build": "yarn build:proto && yarn build:dts && cpy './kritor/protos' '../../lib' --cwd=src && yarn build:cjs"
   },
   "license": "MIT",
   "repository": {
@@ -37,13 +37,13 @@
     "koishi": "^4.17.2"
   },
   "devDependencies": {
+    "@grpc/grpc-js": "^1.10.6",
+    "@grpc/proto-loader": "^0.7.12",
+    "@microsoft/api-extractor": "^7.43.1",
+    "cpy-cli": "^5.0.0",
     "esbuild": "^0.20.2",
     "typescript": "^5.4.5",
-    "yml-register": "^1.2.5",
-    "cpy-cli": "^5.0.0",
-    "@microsoft/api-extractor": "^7.43.1",
-    "@grpc/grpc-js": "^1.10.6",
-    "@grpc/proto-loader": "^0.7.12"
+    "yml-register": "^1.2.5"
   },
   "koishi": {
     "description": {
