@@ -10,7 +10,7 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
         let data = 'file'
         let file: Buffer
         let fileUrl: string
-        if (url.startsWith('http://' || url.startsWith('https://'))) {
+        if (url.startsWith('http://') || url.startsWith('https://')) {
             fileUrl = url
             data = 'fileUrl'
         }
