@@ -3,7 +3,7 @@ import { KritorBot } from './bot'
 import { _kritor_common_Element_ElementType__Output, EventStructure__Output, Contact__Output, Element__Output } from './types'
 
 export async function createSession(bot: KritorBot, input: EventStructure__Output) {
-    if (input.event === 'message' || input.message) {
+    if (input.type === 1) {
         const session = bot.session()
         session.type = 'message'
         await decodeMessage(bot, input.message, session.event.message = {}, session.event)
@@ -34,7 +34,7 @@ async function decodeMessage(
 
     const [guildId, channelId] = decodeGuildChannelId(data.contact)
     payload.user = {
-        id: data.sender.uid,
+        id: data.sender.uin.toString(),
         name: data.sender.nick
     }
     payload.timestamp = data.time * 1000

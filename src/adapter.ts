@@ -15,7 +15,7 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
     async connect() {
         try {
             const clients = init(this.bot.config.address)
-            RegisterActiveListener(clients, EventType.EVENT_TYPE_CORE_EVENT, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
+            //RegisterActiveListener(clients, EventType.EVENT_TYPE_CORE_EVENT, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
             RegisterActiveListener(clients, EventType.EVENT_TYPE_MESSAGE, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
             RegisterActiveListener(clients, EventType.EVENT_TYPE_NOTICE, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
             RegisterActiveListener(clients, EventType.EVENT_TYPE_REQUEST, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
@@ -32,7 +32,6 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
     }
 
     async onEvent(input: EventStructure__Output) {
-        this.bot.logger.info(`${input.event} received`)
         // debug
         this.bot.logger.info(input)
         const session = await createSession(this.bot, input)
