@@ -1,7 +1,7 @@
-import { Adapter, Context } from 'koishi'
+import { Adapter, Context, Universal } from 'koishi'
 import { KritorBot } from './bot'
 import { init } from './grpc'
-import { createSession } from './utils'
+import { createSession, decodeLoginUser } from './utils'
 import { EventStructure__Output, EventType } from './types'
 
 export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> = KritorBot<C>> extends Adapter<C, B> {
@@ -15,13 +15,23 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
     async connect() {
         try {
             this.client = init(this.bot.config.address)
+            const account = await this.bot.internal.getCurrentAccount()
+            const { accountUin } = account
+            if (accountUin.toString() !== this.bot.config.selfId) {
+                throw new Error(`configured selfId is ${this.bot.config.selfId}, but connected account is ${accountUin}`)
+            }
             this.registerActiveListener(EventType.EVENT_TYPE_MESSAGE)
             this.registerActiveListener(EventType.EVENT_TYPE_NOTICE)
             this.registerActiveListener(EventType.EVENT_TYPE_REQUEST)
-            this.bot.online()
+            this.bot.update({
+                user: decodeLoginUser(account),
+                status: Universal.Status.ONLINE
+            })
+            this.bot.logger.info('connect to server: %c', this.bot.config.address)
         }
         catch (err) {
             this.bot.offline(err)
+            if (err.message) this.bot.logger.warn(err.message)
         }
     }
 

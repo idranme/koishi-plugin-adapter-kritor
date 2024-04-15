@@ -1,6 +1,6 @@
 import { Universal, h } from 'koishi'
 import { KritorBot } from './bot'
-import { _kritor_common_Element_ElementType__Output, EventStructure__Output, Contact__Output, Element__Output, Sender__Output } from './types'
+import { _kritor_common_Element_ElementType__Output, EventStructure__Output, Contact__Output, Element__Output, Sender__Output, GetCurrentAccountResponse__Output } from './types'
 
 export async function createSession(bot: KritorBot, input: EventStructure__Output) {
     if (input.type === 1) {
@@ -81,4 +81,12 @@ function parseElement(elements: Element__Output[]) {
         }
     }
     return result
+}
+
+export function decodeLoginUser(data: GetCurrentAccountResponse__Output): Universal.User {
+    return {
+        id: data.accountUin.toString(),
+        name: data.accountName,
+        avatar: `http://q.qlogo.cn/headimg_dl?dst_uin=${data.accountUin}&spec=640`
+    }
 }
