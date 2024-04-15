@@ -8,16 +8,16 @@ export async function createSession(bot: KritorBot, input: EventStructure__Outpu
         session.type = 'message'
         await decodeMessage(bot, input.message, session.event.message = {}, session.event)
         session.subtype = session.isDirect ? 'private' : 'group'
-        if (session.content.length > 0) return session
+        if (session.content.length > 0 && session.channelId !== undefined) return session
     }
 }
 
 function decodeGuildChannelId(contact: Contact__Output, sender: Sender__Output) {
-    if (contact.scene === 1) {
+    if (!contact.scene) {
+        return [contact.peer, contact.peer]
+    } else if (contact.scene === 1) {
         const userId = contact.peer === sender.uid ? sender.uin : contact.peer
         return [undefined, 'private:' + userId]
-    } else {
-        return [contact.peer, contact.peer]
     }
 }
 
