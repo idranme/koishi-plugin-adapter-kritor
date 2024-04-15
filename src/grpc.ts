@@ -15,7 +15,7 @@ function getClient<Subtype>(constructor: SubtypeConstructor<typeof grpc.Client, 
     return new constructor(address, credential)
 }
 
-export function init(address: string, timeout: number = 5000) {
+export function init(address: string, timeout = 5000) {
     const authenticationProtoGrpcType = getProtoGrpcType('auth/authentication.proto', [__dirname + '/kritor/protos']) as Kritor.AuthenticationProtoGrpcType
     const coreProtoGrpcType = getProtoGrpcType('core/core.proto', [__dirname + '/kritor/protos']) as Kritor.CoreProtoGrpcType
     const customizationProtoGrpcType = getProtoGrpcType('developer/customization.proto', [__dirname + '/kritor/protos']) as Kritor.CustomizationProtoGrpcType
@@ -69,15 +69,6 @@ export function init(address: string, timeout: number = 5000) {
         messageClient,
         webClient,
     }
-}
-
-export function RegisterActiveListener(client: ReturnType<typeof init>, type: Kritor.EventType, dataCallback: (event: Kritor.EventStructure__Output) => void, endCallback: () => void, errorCallback: (e: Error) => void) {
-    const { eventClient } = client
-    const eventStream = eventClient.RegisterActiveListener({ type })
-    eventStream.on('data', dataCallback)
-    eventStream.on('end', endCallback)
-    eventStream.on('error', errorCallback)
-    return eventStream
 }
 
 /*

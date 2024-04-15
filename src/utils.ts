@@ -1,6 +1,6 @@
 import { Universal, h } from 'koishi'
 import { KritorBot } from './bot'
-import { _kritor_common_Element_ElementType__Output, EventStructure__Output, Contact__Output, Element__Output } from './types'
+import { _kritor_common_Element_ElementType__Output, EventStructure__Output, Contact__Output, Element__Output, Sender__Output } from './types'
 
 export async function createSession(bot: KritorBot, input: EventStructure__Output) {
     if (input.type === 1) {
@@ -12,9 +12,9 @@ export async function createSession(bot: KritorBot, input: EventStructure__Outpu
     }
 }
 
-function decodeGuildChannelId(contact: Contact__Output) {
+function decodeGuildChannelId(contact: Contact__Output, sender: Sender__Output) {
     if (contact.scene === 1) {
-        return [undefined, 'private:' + contact.peer]
+        return [undefined, 'private:' + sender.uin]
     } else {
         return [contact.peer, contact.peer]
     }
@@ -32,7 +32,7 @@ async function decodeMessage(
 
     if (!payload) return message
 
-    const [guildId, channelId] = decodeGuildChannelId(data.contact)
+    const [guildId, channelId] = decodeGuildChannelId(data.contact, data.sender)
     payload.user = {
         id: data.sender.uin.toString(),
         name: data.sender.nick

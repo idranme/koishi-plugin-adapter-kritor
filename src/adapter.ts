@@ -1,6 +1,6 @@
 import { Adapter, Context } from 'koishi'
 import { KritorBot } from './bot'
-import { init, RegisterActiveListener } from './grpc'
+import { init } from './grpc'
 import { createSession } from './utils'
 import { EventStructure__Output, EventType } from './types'
 
@@ -14,17 +14,10 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
 
     async connect() {
         try {
-            const clients = init(this.bot.config.address)
-            //RegisterActiveListener(clients, EventType.EVENT_TYPE_CORE_EVENT, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
-            const messageEventStream = RegisterActiveListener(clients, EventType.EVENT_TYPE_MESSAGE, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
-            const noticeEventStream = RegisterActiveListener(clients, EventType.EVENT_TYPE_NOTICE, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
-            const requestEventStream = RegisterActiveListener(clients, EventType.EVENT_TYPE_REQUEST, this.onEvent.bind(this), this.onEnd.bind(this), this.onError.bind(this))
-            this.ctx.on('dispose', () => {
-                messageEventStream.destroy()
-                noticeEventStream.destroy()
-                requestEventStream.destroy()
-            })
-            this.client = clients
+            this.client = init(this.bot.config.address)
+            this.registerActiveListener(EventType.EVENT_TYPE_MESSAGE)
+            this.registerActiveListener(EventType.EVENT_TYPE_NOTICE)
+            this.registerActiveListener(EventType.EVENT_TYPE_REQUEST)
             this.bot.online()
         }
         catch (err) {
@@ -49,5 +42,16 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
 
     onError(e: Error) {
         this.bot.logger.info(e)
+    }
+
+    registerActiveListener(type: EventType) {
+        const { eventClient } = this.client
+        const eventStream = eventClient.RegisterActiveListener({ type })
+        eventStream.on('data', this.onEvent.bind(this))
+        eventStream.on('end', this.onEnd.bind(this))
+        eventStream.on('error', this.onError.bind(this))
+        this.ctx.on('dispose', () => {
+            eventStream.destroy()
+        })
     }
 }
