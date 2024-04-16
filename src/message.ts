@@ -1,22 +1,28 @@
 import { Context, Element, MessageEncoder, base64ToArrayBuffer } from 'koishi'
 import { KritorBot } from './bot'
+import { getContact } from './utils'
 import * as Kritor from './types'
 
 type MediaElementType = 'IMAGE' | 'VOICE' | 'VIDEO'
 
 export class KritorMessageEncoder<C extends Context = Context> extends MessageEncoder<C, KritorBot<C>> {
     private elements: Kritor.Element[] = []
+    private contact: Kritor.Contact
+
+    async prepare() {
+        this.contact = getContact(this.channelId)
+    }
 
     private async fetchMedia(type: MediaElementType, element: Element): Promise<Kritor.Element> {
-        const url = element.attrs.src || element.attrs.url
-        let data = 'file'
+        const url: string = element.attrs.src ?? element.attrs.url
+        let data: 'file' | 'fileName' | 'filePath' | 'fileUrl'
         let file: Uint8Array
         let fileUrl: string
         if (url.startsWith('http://') || url.startsWith('https://')) {
             fileUrl = url
             data = 'fileUrl'
-        }
-        if (data === 'file') {
+        } else {
+            data = 'file'
             const capture = /^data:([\w/-]+);base64,(.*)$/.exec(url)
             if (capture?.[2]) {
                 file = new Uint8Array(base64ToArrayBuffer(capture[2]))
@@ -55,7 +61,7 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
         )
         if (this.elements.length === 0) return
 
-        const { messageId, messageTime } = await this.bot.internal.sendMessage(this.channelId, this.elements)
+        const { messageId, messageTime } = await this.bot.internal.sendMessage(this.contact, this.elements)
         const session = this.bot.session()
         session.event.message ??= {}
         session.event.message.id = messageId
@@ -77,14 +83,25 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
                     }
                 })
                 break
-            case 'at':
-                this.elements.push({
-                    type: 'AT',
-                    at: {
-                        uid: attrs.id.startsWith('u_') ? attrs.id : '' // TODO: getUidByUin
+            case 'at': {
+                if (this.contact.scene === 'GROUP') {
+                    let uid: string
+                    if (attrs.type === 'all') {
+                        // https://github.com/whitechi73/OpenShamrock/blob/59d762eecf6627bd5480cd308e2f6171118a3bc0/xposed/src/main/java/qq/service/msg/NtMsgConvertor.kt#L139C21-L139C24
+                        uid = 'all'
+                    } else {
+                        const id: string = attrs.id
+                        uid = id.startsWith('u_') ? id : Object.values((await this.bot.internal.getUidByUin([id])).uidMap)[0]
                     }
-                })
+                    this.elements.push({
+                        type: 'AT',
+                        at: {
+                            uid
+                        }
+                    })
+                }
                 break
+            }
             case 'text':
                 this.elements.push({
                     type: 'TEXT',
