@@ -15,8 +15,8 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
 
     constructor(ctx: C, private bot: B) {
         super(ctx)
-        bot.adapter = this
         this.logger = bot.logger
+        bot.adapter = this
     }
 
     async connect() {

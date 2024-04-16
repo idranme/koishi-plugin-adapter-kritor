@@ -28,7 +28,7 @@ async function decodeMessage(
     payload: Universal.MessageLike = message
 ) {
     message.id = data.messageId
-    message.elements = parseElement(data.elements ?? [])
+    message.elements = await parseElement(bot, data.elements ?? [], message)
     message.content = message.elements.join('')
 
     if (!payload) return message
@@ -45,32 +45,42 @@ async function decodeMessage(
     return message
 }
 
-function parseElement(elements: Kritor.Element__Output[]) {
+async function parseElement(
+    bot: KritorBot,
+    elements: Kritor.Element__Output[],
+    message: Universal.Message
+) {
     const result: h[] = []
     for (const v of elements) {
-        let type = v.type
-        if (v.text) {
-            type = 0
-        }
-        switch (type) {
+        switch (v.type) {
             case 0:
+            case undefined:
                 result.push(h.text(v.text.text))
                 break
             case 1:
                 result.push(h.at(v.at.uin.toString()))
                 break
-            case 2:
-                result.push(h.text(JSON.stringify(v.face)))
+            case 2: {
+                let id = `${v.face.id}`
+                if (v.face.isBig) {
+                    id += `:big`
+                }
+                result.push(h('face', { id, platform: bot.platform }))
                 break
+            }
             case 3:
                 break
-            case 4:
-                result.push(h.quote(v.reply.messageId))
+            case 4: {
+                message.quote = {
+                    id: v.reply.messageId
+                }
                 break
+            }
             case 5:
-                result.push(h.image(v.image.fileUrl))
+                result.push(h.image(v.image.fileUrl, { [`${bot.platform}:face`]: v.image.subType === 1 }))
                 break
             case 6:
+                result.push(h.video(v.voice.fileUrl))
                 break
             case 7:
                 result.push(h.video(v.video.fileUrl))

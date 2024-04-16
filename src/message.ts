@@ -156,10 +156,25 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
                 await this.flush()
                 await this.render(children, true)
                 break
-            // case 'file':
-            //     await this.flush()
-            //     await this.sendMedia(element)
-            //     break
+            case 'face': {
+                const [id, flag] = attrs.id.split(':')
+                this.elements.push({
+                    type: 'FACE',
+                    face: {
+                        id,
+                        isBig: flag === 'big'
+                    }
+                })
+                break
+            }
+            case 'a': {
+                await this.render(children)
+                const prev = this.elements.at(-1)
+                if (prev.type === 'TEXT') {
+                    prev.text.text += ` ( ${attrs.href} )`
+                }
+                break
+            }
             default:
                 await this.render(children)
                 break
