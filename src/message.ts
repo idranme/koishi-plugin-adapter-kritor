@@ -2,10 +2,12 @@ import { Context, Element, MessageEncoder, base64ToArrayBuffer } from 'koishi'
 import { KritorBot } from './bot'
 import * as Kritor from './types'
 
+type MediaElementType = 'IMAGE' | 'VOICE' | 'VIDEO'
+
 export class KritorMessageEncoder<C extends Context = Context> extends MessageEncoder<C, KritorBot<C>> {
     private elements: Kritor.Element[] = []
 
-    private async fetchMedia(type: Kritor.Element['type'], element: Element): Promise<Kritor.Element> {
+    private async fetchMedia(type: MediaElementType, element: Element): Promise<Kritor.Element> {
         const url = element.attrs.src || element.attrs.url
         let data = 'file'
         let file: Uint8Array
@@ -16,18 +18,22 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
         }
         if (data === 'file') {
             const capture = /^data:([\w/-]+);base64,(.*)$/.exec(url)
-            file = new Uint8Array(capture?.[2] ? base64ToArrayBuffer(capture[2]) : (await this.bot.http.file(url)).data)
+            if (capture?.[2]) {
+                file = new Uint8Array(base64ToArrayBuffer(capture[2]))
+            } else {
+                const res = await this.bot.http.file(url)
+                file = new Uint8Array(res.data)
+            }
         }
-        const property = typeof type === 'string' ? type.toLowerCase() : type
+        const key = type.toLowerCase() as Lowercase<typeof type>
         const res = {
             type,
-            [property]: {
+            [key]: {
                 data,
                 file,
                 fileUrl
             }
         }
-        console.log(res)
         return res
     }
 
