@@ -28,10 +28,6 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
                 }
             })
             const account = await this.bot.internal.getCurrentAccount()
-            const { accountUin } = account
-            if (accountUin.toString() !== this.bot.config.selfId) {
-                throw new Error(`configured selfId is ${this.bot.config.selfId}, but connected account is ${accountUin}`)
-            }
             this.registerActiveListener(Kritor.EventType.EVENT_TYPE_MESSAGE)
             this.registerActiveListener(Kritor.EventType.EVENT_TYPE_NOTICE)
             this.registerActiveListener(Kritor.EventType.EVENT_TYPE_REQUEST)
