@@ -94,10 +94,11 @@ async function parseElement(
 }
 
 export function decodeLoginUser(data: Kritor.GetCurrentAccountResponse__Output): Universal.User {
+    const id = data.accountUin.toString()
     return {
-        id: data.accountUin.toString(),
+        id,
         name: data.accountName,
-        avatar: `http://q.qlogo.cn/headimg_dl?dst_uin=${data.accountUin}&spec=640`
+        avatar: `http://q.qlogo.cn/headimg_dl?dst_uin=${id}&spec=640`
     }
 }
 
@@ -110,4 +111,35 @@ export function getContact(channelId: string): Kritor.Contact {
     } else {
         return { scene: 'GROUP', peer: channelId }
     }
+}
+
+export function decodeGuild(data: Kritor.GroupInfo__Output): Universal.Guild {
+    const id = data.groupId.toString()
+    return {
+        id,
+        name: data.groupName,
+        avatar: `https://p.qlogo.cn/gh/${id}/${id}/640`
+    }
+}
+
+export function decodeUser(data: Kritor.ProfileCard__Output): Universal.User {
+    const id = data.uin.toString()
+    return {
+        id,
+        name: data.nick,
+        avatar: `http://q.qlogo.cn/headimg_dl?dst_uin=${id}&spec=640`
+    }
+}
+
+export function decodeFriendList(data: Kritor.FriendInfo__Output[]): Universal.User[] {
+    const result: Universal.User[] = []
+    for (const v of data) {
+        const id = v.uin.toString()
+        result.push({
+            id,
+            name: v.nick,
+            avatar: `http://q.qlogo.cn/headimg_dl?dst_uin=${id}&spec=640`
+        })
+    }
+    return result
 }

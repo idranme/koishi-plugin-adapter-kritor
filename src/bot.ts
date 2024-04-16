@@ -1,8 +1,8 @@
-import { Bot, Context, Schema, Quester, Time } from 'koishi'
+import { Bot, Context, Schema, Quester, Time, Universal } from 'koishi'
 import { KritorAdapter } from './adapter'
 import { KritorMessageEncoder } from './message'
 import { Internal } from './internal'
-import { getContact } from './utils'
+import { getContact, decodeLoginUser, decodeGuild, decodeUser, decodeFriendList } from './utils'
 
 export class KritorBot<C extends Context = Context> extends Bot<C, KritorBot.Config> {
   static inject = {
@@ -20,9 +20,47 @@ export class KritorBot<C extends Context = Context> extends Bot<C, KritorBot.Con
     ctx.plugin(KritorAdapter, this)
   }
 
-  async deleteMessage(channelId: string, messageId: string): Promise<void> {
+  async createDirectChannel(userId: string) {
+    return { id: 'private:' + userId, type: Universal.Channel.Type.DIRECT }
+  }
+
+  async getLogin() {
+    const data = await this.internal.getCurrentAccount()
+    this.user = decodeLoginUser(data)
+    return this.toJSON()
+  }
+
+  async deleteMessage(channelId: string, messageId: string) {
     const contact = getContact(channelId)
     await this.internal.recallMessage(contact, messageId)
+  }
+
+  async getGuild(guildId: string) {
+    const { groupInfo } = await this.internal.getGroupInfo(guildId)
+    return decodeGuild(groupInfo)
+  }
+
+  async getGuildList(next?: string) {
+    const { groupsInfo } = await this.internal.getGroupList()
+    return { data: groupsInfo.map(decodeGuild) }
+  }
+
+  async kickGuildMember(guildId: string, userId: string, permanent?: boolean) {
+    await this.internal.kickMember(guildId, userId, permanent)
+  }
+
+  async muteGuildMember(guildId: string, userId: string, duration: number, reason?: string) {
+    await this.internal.banMember(guildId, userId, Number((duration / 1000).toFixed(0)))
+  }
+
+  async getUser(userId: string, guildId?: string) {
+    const { friendsProfileCard } = await this.internal.getFriendProfileCard([userId])
+    return decodeUser(friendsProfileCard[0])
+  }
+
+  async getFriendList(next?: string) {
+    const { friendsInfo } = await this.internal.getFriendList()
+    return { data: decodeFriendList(friendsInfo) }
   }
 }
 
