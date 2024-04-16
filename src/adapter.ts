@@ -1,4 +1,4 @@
-import { Adapter, Context, Universal, Logger } from 'koishi'
+import { Adapter, Context, Universal, Logger, Time } from 'koishi'
 import { KritorBot } from './bot'
 import { createSession, decodeLoginUser } from './utils'
 import * as grpc from '@grpc/grpc-js'
@@ -42,8 +42,13 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
             this.logger.info('connect to server: %c', this.bot.config.address)
         }
         catch (err) {
-            this.bot.offline(err)
             if (err.message) this.logger.warn(err.message)
+            this.bot.update({
+                status: Universal.Status.RECONNECT
+            })
+            const timeout = this.bot.config.retryInterval
+            this.logger.info(`will retry connection in ${Time.format(timeout)}...`)
+            this.ctx.setTimeout(async () => await this.connect(), timeout)
         }
     }
 
@@ -77,7 +82,7 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
         })
     }
 
-    private init(address: string, timeout = 5000) {
+    private init(address: string) {
         // Forked from https://github.com/KarinJS/kritor-ts/blob/2f7cf14012ce72e8d92e6a0426acbf76be270ea0/src/api.ts#L45
 
         const authenticationProtoGrpcType = this.getProtoGrpcType('auth/authentication.proto', [__dirname + '/kritor/protos']) as Kritor.AuthenticationProtoGrpcType
@@ -110,6 +115,7 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
         //const guildClient = this.getClient(guildProtoGrpcType.kritor.guild.GuildService, address, credential)
         //const webClient = this.getClient(webProtoGrpcType.kritor.web.WebService, address, credential)
 
+        const timeout = 3000
         const deadline = new Date()
         deadline.setSeconds(deadline.getSeconds() + timeout)
         Promise.resolve(authenticationClient.waitForReady(deadline, function* (error?: Error) {

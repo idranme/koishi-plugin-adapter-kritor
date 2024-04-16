@@ -31,6 +31,7 @@ export namespace KritorBot {
   export interface Config {
     selfId: string
     address: string
+    retryInterval: number
     retryLazy: number
   }
 
@@ -38,6 +39,7 @@ export namespace KritorBot {
     Schema.object({
       selfId: Schema.string().description(`机器人的账号。`).required(),
       address: Schema.string().description('Kritor 服务器地址。').default('localhost:5700'),
+      retryInterval: Schema.natural().role('ms').description('初次连接时的重试时间间隔。').default(30 * Time.second),
       retryLazy: Schema.natural().role('ms').description('连接关闭后的重试时间间隔。').default(10 * Time.second)
     })
   ])
