@@ -9,7 +9,7 @@ export class Internal {
      * 发送消息
      */
     sendMessage(channelId: string, elements: Kritor.Element[]) {
-        return new Promise<Kritor.SendMessageResponse__Output>((resolve) => {
+        return new Promise<Kritor.SendMessageResponse__Output>((resolve, reject) => {
             let contact: Kritor.Contact = { scene: 'GROUP', peer: channelId }
             if (channelId.startsWith('private:')) {
                 contact.scene = "FRIEND"
@@ -17,18 +17,24 @@ export class Internal {
             }
             const { messageClient } = this.bot.adapter.client
             messageClient.sendMessage({ contact, elements, retryCount: 3 }, (err, response) => {
-                if (err) throw err
-                resolve(response)
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(response)
+                }
             })
         })
     }
 
     getCurrentAccount() {
-        return new Promise<Kritor.GetCurrentAccountResponse__Output>((resolve) => {
+        return new Promise<Kritor.GetCurrentAccountResponse__Output>((resolve, reject) => {
             const { coreClient } = this.bot.adapter.client
             coreClient.getCurrentAccount({}, (err, response) => {
-                if (err) throw err
-                resolve(response)
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(response)
+                }
             })
         })
     }
