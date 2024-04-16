@@ -1,4 +1,4 @@
-import { Bot, Context, Schema, h, Quester } from 'koishi'
+import { Bot, Context, Schema, h, Quester, Time } from 'koishi'
 import { KritorAdapter } from './adapter'
 import { KritorMessageEncoder } from './message'
 import { Internal } from './internal'
@@ -33,12 +33,14 @@ export namespace KritorBot {
   export interface Config {
     selfId: string
     address: string
+    retryLazy: number
   }
 
   export const Config: Schema<Config> = Schema.intersect([
     Schema.object({
       selfId: Schema.string().description(`机器人的账号。`).required(),
       address: Schema.string().description('Kritor 服务器地址。').default('localhost:5700'),
+      retryLazy: Schema.natural().role('ms').description('连接关闭后的重试时间间隔。').default(7 * Time.second)
     })
   ])
 }
