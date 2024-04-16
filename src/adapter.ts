@@ -56,7 +56,7 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
     }
 
     private onError(err: Error, type: Kritor.EventType) {
-        this.bot.logger.info(err)
+        this.bot.logger.debug(err)
     }
 
     private registerActiveListener(type: Kritor.EventType) {

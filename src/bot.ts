@@ -1,7 +1,8 @@
-import { Bot, Context, Schema, h, Quester, Time } from 'koishi'
+import { Bot, Context, Schema, Quester, Time } from 'koishi'
 import { KritorAdapter } from './adapter'
 import { KritorMessageEncoder } from './message'
 import { Internal } from './internal'
+import { getContact } from './utils'
 
 export class KritorBot<C extends Context = Context> extends Bot<C, KritorBot.Config> {
   static inject = {
@@ -21,11 +22,8 @@ export class KritorBot<C extends Context = Context> extends Bot<C, KritorBot.Con
   }
 
   async deleteMessage(channelId: string, messageId: string): Promise<void> {
-    return null
-  }
-
-  async editMessage(channelId: string, messageId: string, content: h.Fragment): Promise<void> {
-    return null
+    const contact = getContact(channelId)
+    await this.internal.recallMessage(contact, messageId)
   }
 }
 

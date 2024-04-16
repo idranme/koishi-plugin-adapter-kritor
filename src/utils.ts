@@ -1,8 +1,8 @@
 import { Universal, h } from 'koishi'
 import { KritorBot } from './bot'
-import { _kritor_common_Element_ElementType__Output, EventStructure__Output, Contact__Output, Element__Output, Sender__Output, GetCurrentAccountResponse__Output } from './types'
+import * as Kritor from './types'
 
-export async function createSession(bot: KritorBot, input: EventStructure__Output) {
+export async function createSession(bot: KritorBot, input: Kritor.EventStructure__Output) {
     if (input.type === 1) {
         const session = bot.session()
         session.type = 'message'
@@ -12,7 +12,7 @@ export async function createSession(bot: KritorBot, input: EventStructure__Outpu
     }
 }
 
-function decodeGuildChannelId(contact: Contact__Output, sender: Sender__Output) {
+function decodeGuildChannelId(contact: Kritor.Contact__Output, sender: Kritor.Sender__Output) {
     if (!contact.scene) {
         return [contact.peer, contact.peer]
     } else if (contact.scene === 1) {
@@ -23,7 +23,7 @@ function decodeGuildChannelId(contact: Contact__Output, sender: Sender__Output) 
 
 async function decodeMessage(
     bot: KritorBot,
-    data: EventStructure__Output['message'],
+    data: Kritor.EventStructure__Output['message'],
     message: Universal.Message = {},
     payload: Universal.MessageLike = message
 ) {
@@ -45,7 +45,7 @@ async function decodeMessage(
     return message
 }
 
-function parseElement(elements: Element__Output[]) {
+function parseElement(elements: Kritor.Element__Output[]) {
     const result: h[] = []
     for (const v of elements) {
         let type = v.type
@@ -83,10 +83,21 @@ function parseElement(elements: Element__Output[]) {
     return result
 }
 
-export function decodeLoginUser(data: GetCurrentAccountResponse__Output): Universal.User {
+export function decodeLoginUser(data: Kritor.GetCurrentAccountResponse__Output): Universal.User {
     return {
         id: data.accountUin.toString(),
         name: data.accountName,
         avatar: `http://q.qlogo.cn/headimg_dl?dst_uin=${data.accountUin}&spec=640`
+    }
+}
+
+export function getContact(channelId: string): Kritor.Contact {
+    if (channelId.startsWith('private:')) {
+        return {
+            scene: 'FRIEND',
+            peer: channelId.replace('private:', '')
+        }
+    } else {
+        return { scene: 'GROUP', peer: channelId }
     }
 }

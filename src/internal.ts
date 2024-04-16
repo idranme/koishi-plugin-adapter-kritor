@@ -2,19 +2,10 @@ import * as Kritor from './types'
 import { KritorBot } from './bot'
 
 export class Internal {
-    constructor(private bot: KritorBot) {
-    }
+    constructor(private bot: KritorBot) { }
 
-    /**
-     * 发送消息
-     */
-    sendMessage(channelId: string, elements: Kritor.Element[]) {
+    sendMessage(contact: Kritor.Contact, elements: Kritor.Element[]) {
         return new Promise<Kritor.SendMessageResponse__Output>((resolve, reject) => {
-            let contact: Kritor.Contact = { scene: 'GROUP', peer: channelId }
-            if (channelId.startsWith('private:')) {
-                contact.scene = "FRIEND"
-                contact.peer = channelId.replace('private:', '')
-            }
             const { messageClient } = this.bot.adapter.client
             messageClient.sendMessage({ contact, elements, retryCount: 3 }, (err, response) => {
                 if (err) {
@@ -30,6 +21,32 @@ export class Internal {
         return new Promise<Kritor.GetCurrentAccountResponse__Output>((resolve, reject) => {
             const { coreClient } = this.bot.adapter.client
             coreClient.getCurrentAccount({}, (err, response) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(response)
+                }
+            })
+        })
+    }
+
+    getUidByUin(targetUins: (string | number)[]) {
+        return new Promise<Kritor.GetUidByUinResponse__Output>((resolve, reject) => {
+            const { friendClient } = this.bot.adapter.client
+            friendClient.getUidByUin({ targetUins }, (err, response) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(response)
+                }
+            })
+        })
+    }
+
+    recallMessage(contact: Kritor.Contact, messageId: string) {
+        return new Promise<Kritor.RecallMessageResponse__Output>((resolve, reject) => {
+            const { messageClient } = this.bot.adapter.client
+            messageClient.recallMessage({ contact, messageId }, (err, response) => {
                 if (err) {
                     reject(err)
                 } else {

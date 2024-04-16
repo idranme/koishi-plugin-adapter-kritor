@@ -30,3 +30,5 @@ export { Element, Element__Output, _kritor_common_Element_ElementType__Output } 
 export { SendMessageResponse__Output } from './generated/kritor/message/SendMessageResponse'
 export { Sender__Output } from './generated/kritor/common/Sender'
 export { GetCurrentAccountResponse__Output } from './generated/kritor/core/GetCurrentAccountResponse'
+export { GetUidByUinResponse__Output } from './generated/kritor/friend/GetUidByUinResponse'
+export { RecallMessageResponse__Output } from './generated/kritor/message/RecallMessageResponse'
