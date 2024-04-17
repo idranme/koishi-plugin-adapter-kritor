@@ -2,7 +2,7 @@ import { Bot, Context, Schema, Quester, Time, Universal } from 'koishi'
 import { KritorAdapter } from './adapter'
 import { KritorMessageEncoder } from './message'
 import { Internal } from './internal'
-import { getContact, decodeLoginUser, decodeGuild, decodeUser, decodeFriendList } from './utils'
+import { getContact, decodeLoginUser, decodeGuild, decodeUser, decodeFriendList, decodeMessage } from './utils'
 
 export class KritorBot<C extends Context = Context> extends Bot<C, KritorBot.Config> {
   static inject = {
@@ -61,6 +61,12 @@ export class KritorBot<C extends Context = Context> extends Bot<C, KritorBot.Con
   async getFriendList(next?: string) {
     const { friendsInfo } = await this.internal.getFriendList()
     return { data: decodeFriendList(friendsInfo) }
+  }
+
+  async getMessage(channelId: string, messageId: string) {
+    const contact = getContact(channelId)
+    const { message } = await this.internal.getMessage(contact, messageId)
+    return await decodeMessage(this, message)
   }
 }
 

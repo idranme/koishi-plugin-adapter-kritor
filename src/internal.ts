@@ -86,7 +86,7 @@ export class Internal {
     getGroupMemberInfo(groupId: number | string, targetUin: number | string, refresh?: boolean) {
         return new Promise<Kritor.GetGroupMemberInfoResponse__Output>((resolve, reject) => {
             const { groupClient } = this.bot.adapter.client
-            groupClient.GetGroupMemberInfo({ groupId, targetUin, target: 'targetUin', refresh }, (err, response) => {
+            groupClient.getGroupMemberInfo({ groupId, targetUin, target: 'targetUin', refresh }, (err, response) => {
                 if (err) {
                     reject(err)
                 } else {
@@ -100,7 +100,7 @@ export class Internal {
     getGroupMemberList(groupId: number | string, refresh?: boolean) {
         return new Promise<Kritor.GetGroupMemberListResponse__Output>((resolve, reject) => {
             const { groupClient } = this.bot.adapter.client
-            groupClient.GetGroupMemberList({ groupId, refresh }, (err, response) => {
+            groupClient.getGroupMemberList({ groupId, refresh }, (err, response) => {
                 if (err) {
                     reject(err)
                 } else {
@@ -113,7 +113,7 @@ export class Internal {
     kickMember(groupId: number | string, targetUin: number | string, rejectAddRequest?: boolean, kickReason?: string) {
         return new Promise<Kritor.KickMemberResponse__Output>((resolve, reject) => {
             const { groupClient } = this.bot.adapter.client
-            groupClient.KickMember({ groupId, targetUin, target: 'targetUin', rejectAddRequest, kickReason }, (err, response) => {
+            groupClient.kickMember({ groupId, targetUin, target: 'targetUin', rejectAddRequest, kickReason }, (err, response) => {
                 if (err) {
                     reject(err)
                 } else {
@@ -127,7 +127,7 @@ export class Internal {
         // duration 单位：秒
         return new Promise<Kritor.BanMemberResponse__Output>((resolve, reject) => {
             const { groupClient } = this.bot.adapter.client
-            groupClient.BanMember({ groupId, targetUin, target: 'targetUin', duration }, (err, response) => {
+            groupClient.banMember({ groupId, targetUin, target: 'targetUin', duration }, (err, response) => {
                 if (err) {
                     reject(err)
                 } else {
@@ -153,7 +153,34 @@ export class Internal {
     getFriendList(refresh?: boolean) {
         return new Promise<Kritor.GetFriendListResponse__Output>((resolve, reject) => {
             const { friendClient } = this.bot.adapter.client
-            friendClient.GetFriendList({ refresh }, (err, response) => {
+            friendClient.getFriendList({ refresh }, (err, response) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(response)
+                }
+            })
+        })
+    }
+
+    getMessage(contact: Kritor.Contact, messageId: string) {
+        return new Promise<Kritor.GetMessageResponse__Output>((resolve, reject) => {
+            const { messageClient } = this.bot.adapter.client
+            messageClient.getMessage({ contact, messageId }, (err, response) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(response)
+                }
+            })
+        })
+    }
+
+    // sham 报错 UNKNOWN
+    getHistoryMessage(contact: Kritor.Contact, startMessageId?: string, count?: number) {
+        return new Promise<Kritor.GetHistoryMessageResponse__Output>((resolve, reject) => {
+            const { messageClient } = this.bot.adapter.client
+            messageClient.getHistoryMessage({ contact, startMessageId, count }, (err, response) => {
                 if (err) {
                     reject(err)
                 } else {

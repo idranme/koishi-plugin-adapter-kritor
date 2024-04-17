@@ -40,3 +40,5 @@ export { KickMemberResponse__Output } from './generated/kritor/group/KickMemberR
 export { BanMemberResponse__Output } from './generated/kritor/group/BanMemberResponse'
 export { GetFriendProfileCardResponse__Output } from './generated/kritor/friend/GetFriendProfileCardResponse'
 export { GetFriendListResponse__Output } from './generated/kritor/friend/GetFriendListResponse'
+export { GetMessageResponse__Output } from './generated/kritor/message/GetMessageResponse'
+export { GetHistoryMessageResponse__Output } from './generated/kritor/message/GetHistoryMessageResponse'

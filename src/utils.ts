@@ -21,9 +21,9 @@ function decodeGuildChannelId(contact: Kritor.Contact__Output, sender: Kritor.Se
     }
 }
 
-async function decodeMessage(
+export async function decodeMessage(
     bot: KritorBot,
-    data: Kritor.EventStructure__Output['message'],
+    data: Kritor.PushMessageBody__Output,
     message: Universal.Message = {},
     payload: Universal.MessageLike = message
 ) {
