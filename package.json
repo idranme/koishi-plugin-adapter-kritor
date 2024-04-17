@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-adapter-kritor",
   "description": "Kritor Protocol Adapter for Koishi",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "lib/index.js",
   "typings": "lib/koishi-plugin-adapter-kritor.d.ts",
   "files": [
