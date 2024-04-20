@@ -1,192 +1,95 @@
 import * as Kritor from './types'
 import { KritorBot } from './bot'
+import { promisify } from 'node:util'
 
 export class Internal {
     constructor(private bot: KritorBot) { }
 
     sendMessage(contact: Kritor.Contact, elements: Kritor.Element[]) {
-        return new Promise<Kritor.SendMessageResponse__Output>((resolve, reject) => {
-            const { messageClient } = this.bot.adapter.client
-            messageClient.sendMessage({ contact, elements, retryCount: 3 }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { messageClient } = this.bot.adapter.client
+        const call = promisify(messageClient.sendMessage)
+        return call({ contact, elements, retryCount: 3 })
     }
 
     getCurrentAccount() {
-        return new Promise<Kritor.GetCurrentAccountResponse__Output>((resolve, reject) => {
-            const { coreClient } = this.bot.adapter.client
-            coreClient.getCurrentAccount({}, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { coreClient } = this.bot.adapter.client
+        const call = promisify(coreClient.getCurrentAccount)
+        return call({})
     }
 
     getUidByUin(targetUins: (string | number)[]) {
-        return new Promise<Kritor.GetUidByUinResponse__Output>((resolve, reject) => {
-            const { friendClient } = this.bot.adapter.client
-            friendClient.getUidByUin({ targetUins }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { friendClient } = this.bot.adapter.client
+        const call = promisify(friendClient.getUidByUin)
+        return call({ targetUins })
     }
 
     recallMessage(contact: Kritor.Contact, messageId: string) {
-        return new Promise<Kritor.RecallMessageResponse__Output>((resolve, reject) => {
-            const { messageClient } = this.bot.adapter.client
-            messageClient.recallMessage({ contact, messageId }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { messageClient } = this.bot.adapter.client
+        const call = promisify(messageClient.recallMessage)
+        return call({ contact, messageId })
     }
 
     getGroupList(refresh?: boolean) {
-        return new Promise<Kritor.GetGroupListResponse__Output>((resolve, reject) => {
-            const { groupClient } = this.bot.adapter.client
-            groupClient.getGroupList({ refresh }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { groupClient } = this.bot.adapter.client
+        const call = promisify(groupClient.getGroupList)
+        return call({ refresh })
     }
 
     getGroupInfo(groupId: number | string) {
-        return new Promise<Kritor.GetGroupInfoResponse__Output>((resolve, reject) => {
-            const { groupClient } = this.bot.adapter.client
-            groupClient.getGroupInfo({ groupId }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { groupClient } = this.bot.adapter.client
+        const call = promisify(groupClient.getGroupInfo)
+        return call({ groupId })
     }
 
     // sham 报错 UNKNOWN
     getGroupMemberInfo(groupId: number | string, targetUin: number | string, refresh?: boolean) {
-        return new Promise<Kritor.GetGroupMemberInfoResponse__Output>((resolve, reject) => {
-            const { groupClient } = this.bot.adapter.client
-            groupClient.getGroupMemberInfo({ groupId, targetUin, target: 'targetUin', refresh }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { groupClient } = this.bot.adapter.client
+        const call = promisify(groupClient.getGroupMemberInfo)
+        return call({ groupId, targetUin, target: 'targetUin', refresh })
     }
 
     // sham 报错 UNKNOWN
     getGroupMemberList(groupId: number | string, refresh?: boolean) {
-        return new Promise<Kritor.GetGroupMemberListResponse__Output>((resolve, reject) => {
-            const { groupClient } = this.bot.adapter.client
-            groupClient.getGroupMemberList({ groupId, refresh }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { groupClient } = this.bot.adapter.client
+        const call = promisify(groupClient.getGroupMemberList)
+        return call({ groupId, refresh })
     }
 
     kickMember(groupId: number | string, targetUin: number | string, rejectAddRequest?: boolean, kickReason?: string) {
-        return new Promise<Kritor.KickMemberResponse__Output>((resolve, reject) => {
-            const { groupClient } = this.bot.adapter.client
-            groupClient.kickMember({ groupId, targetUin, target: 'targetUin', rejectAddRequest, kickReason }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { groupClient } = this.bot.adapter.client
+        const call = promisify(groupClient.kickMember)
+        return call({ groupId, targetUin, target: 'targetUin', rejectAddRequest, kickReason })
     }
 
     banMember(groupId: number | string, targetUin: number | string, duration: number) {
         // duration 单位：秒
-        return new Promise<Kritor.BanMemberResponse__Output>((resolve, reject) => {
-            const { groupClient } = this.bot.adapter.client
-            groupClient.banMember({ groupId, targetUin, target: 'targetUin', duration }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { groupClient } = this.bot.adapter.client
+        const call = promisify(groupClient.banMember)
+        return call({ groupId, targetUin, target: 'targetUin', duration })
     }
 
     getFriendProfileCard(targetUins: (string | number)[]) {
-        return new Promise<Kritor.GetFriendProfileCardResponse__Output>((resolve, reject) => {
-            const { friendClient } = this.bot.adapter.client
-            friendClient.getFriendProfileCard({ targetUins }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { friendClient } = this.bot.adapter.client
+        const call = promisify(friendClient.getFriendProfileCard)
+        return call({ targetUins })
     }
 
     getFriendList(refresh?: boolean) {
-        return new Promise<Kritor.GetFriendListResponse__Output>((resolve, reject) => {
-            const { friendClient } = this.bot.adapter.client
-            friendClient.getFriendList({ refresh }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { friendClient } = this.bot.adapter.client
+        const call = promisify(friendClient.getFriendList)
+        return call({ refresh })
     }
 
     getMessage(contact: Kritor.Contact, messageId: string) {
-        return new Promise<Kritor.GetMessageResponse__Output>((resolve, reject) => {
-            const { messageClient } = this.bot.adapter.client
-            messageClient.getMessage({ contact, messageId }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { messageClient } = this.bot.adapter.client
+        const call = promisify(messageClient.getMessage)
+        return call({ contact, messageId })
     }
 
     // sham 报错 UNKNOWN
     getHistoryMessage(contact: Kritor.Contact, startMessageId?: string, count?: number) {
-        return new Promise<Kritor.GetHistoryMessageResponse__Output>((resolve, reject) => {
-            const { messageClient } = this.bot.adapter.client
-            messageClient.getHistoryMessage({ contact, startMessageId, count }, (err, response) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(response)
-                }
-            })
-        })
+        const { messageClient } = this.bot.adapter.client
+        const call = promisify(messageClient.getHistoryMessage)
+        return call({ contact, startMessageId, count })
     }
 }
