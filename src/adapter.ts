@@ -56,7 +56,9 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
         // debug
         //this.logger.info(input)
         const session = await createSession(this.bot, input)
-        if (session) this.bot.dispatch(session)
+        if (!session) return
+        session.setInternal('kritor', input)
+        this.bot.dispatch(session)
     }
 
     private onEnd(type: Kritor.EventType) {
