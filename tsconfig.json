@@ -16,7 +16,8 @@
       "node",
       "yml-register/types"
     ],
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "strictBindCallApply": true
   },
   "include": [
     "src"
