@@ -31,17 +31,13 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
             this.registerActiveListener(Kritor.EventType.EVENT_TYPE_MESSAGE)
             this.registerActiveListener(Kritor.EventType.EVENT_TYPE_NOTICE)
             this.registerActiveListener(Kritor.EventType.EVENT_TYPE_REQUEST)
-            this.bot.update({
-                user: decodeLoginUser(account),
-                status: Universal.Status.ONLINE
-            })
+            this.bot.user = decodeLoginUser(account)
+            this.bot.online()
             this.logger.info('connect to server: %c', this.bot.config.address)
         }
         catch (err) {
             if (err.message) this.logger.warn(err.message)
-            this.bot.update({
-                status: Universal.Status.RECONNECT
-            })
+            this.bot.status = Universal.Status.RECONNECT
             const timeout = this.bot.config.retryInterval
             this.logger.info(`will retry connection in ${Time.format(timeout)}...`)
             this.ctx.setTimeout(async () => await this.connect(), timeout)

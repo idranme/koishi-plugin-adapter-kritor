@@ -1,4 +1,4 @@
-import { Bot, Context, Schema, Quester, Time, Universal } from 'koishi'
+import { Bot, Context, Schema, Time, Universal } from 'koishi'
 import { KritorAdapter } from './adapter'
 import { KritorMessageEncoder } from './message'
 import { Internal } from './internal'
@@ -9,13 +9,11 @@ export class KritorBot<C extends Context = Context> extends Bot<C, KritorBot.Con
     required: ['http']
   }
   static MessageEncoder = KritorMessageEncoder
-  http: Quester
   internal: Internal
   declare adapter: KritorAdapter<C, this>
 
   constructor(ctx: C, config: KritorBot.Config) {
     super(ctx, config, 'kritor')
-    this.http = ctx.http
     this.internal = new Internal(this)
     ctx.plugin(KritorAdapter, this)
   }

@@ -1,4 +1,4 @@
-import { Context, Element, MessageEncoder, base64ToArrayBuffer } from 'koishi'
+import { Context, Element, MessageEncoder, Binary } from 'koishi'
 import { KritorBot } from './bot'
 import { getContact } from './utils'
 import * as Kritor from './types'
@@ -23,11 +23,11 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
             data = 'fileUrl'
         } else {
             data = 'file'
-            const capture = /^data:([\w/-]+);base64,(.*)$/.exec(url)
+            const capture = /^data:([\w/.+-]+);base64,(.*)$/.exec(url)
             if (capture?.[2]) {
-                file = new Uint8Array(base64ToArrayBuffer(capture[2]))
+                file = new Uint8Array(Binary.fromBase64(capture[2]))
             } else {
-                const res = await this.bot.http.file(url)
+                const res = await this.bot.ctx.http.file(url)
                 file = new Uint8Array(res.data)
             }
         }
