@@ -1,29 +1,28 @@
 {
   "name": "koishi-plugin-adapter-kritor",
   "description": "Kritor Protocol Adapter for Koishi",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
+  "typings": "index.d.ts",
   "files": [
     "lib",
     "dist"
   ],
   "scripts": {
     "build:cjs": "esbuild src/index.ts --outfile=lib/index.js --bundle --platform=node --target=es2022 --external:koishi",
-    "build:dts": "tsc -b && api-extractor run",
     "build:proto": "proto-loader-gen-types --defaults --oneofs --grpcLib=@grpc/grpc-js --includeDirs=./src/kritor/protos ./ --outDir=./src/generated/ ./src/kritor/protos/*/*.proto",
-    "build-ps": "powershell Copy-Item -Path ./src/kritor/protos -Destination ./lib/kritor/protos -Recurse -Force && yarn build:proto && yarn build:dts && yarn build:cjs",
-    "build": "yarn build:proto && yarn build:dts && cpy './kritor/protos' '../../lib' --cwd=src && yarn build:cjs"
+    "build-ps": "yarn build:proto && powershell Copy-Item -Path ./src/kritor/protos -Destination ./lib/kritor/protos -Recurse -Force && yarn build:cjs",
+    "build": "yarn build:proto && cpy './kritor/protos' '../../lib' --cwd=src && yarn build:cjs"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/idanran/koishi-plugin-adapter-kritor.git"
+    "url": "git+https://github.com/idranme/koishi-plugin-adapter-kritor.git"
   },
   "bugs": {
-    "url": "https://github.com/idanran/koishi-plugin-adapter-kritor/issues"
+    "url": "https://github.com/idranme/koishi-plugin-adapter-kritor/issues"
   },
-  "homepage": "https://github.com/idanran/koishi-plugin-adapter-kritor#readme",
+  "homepage": "https://github.com/idranme/koishi-plugin-adapter-kritor#readme",
   "keywords": [
     "chatbot",
     "koishi",
@@ -34,16 +33,13 @@
     "robotics"
   ],
   "peerDependencies": {
-    "koishi": "^4.17.2"
+    "koishi": "^4.17.7"
   },
   "devDependencies": {
-    "@grpc/grpc-js": "^1.10.6",
-    "@grpc/proto-loader": "^0.7.12",
-    "@microsoft/api-extractor": "^7.43.1",
+    "@grpc/grpc-js": "^1.10.10",
+    "@grpc/proto-loader": "^0.7.13",
     "cpy-cli": "^5.0.0",
-    "esbuild": "^0.20.2",
-    "typescript": "^5.4.5",
-    "yml-register": "^1.2.5"
+    "esbuild": "^0.23.0"
   },
   "koishi": {
     "description": {
