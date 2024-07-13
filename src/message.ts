@@ -1,4 +1,4 @@
-import { Context, Element, MessageEncoder, Binary } from 'koishi'
+import { Context, Element, MessageEncoder } from 'koishi'
 import { KritorBot } from './bot'
 import { getContact } from './utils'
 import * as Kritor from './types'
@@ -15,32 +15,17 @@ export class KritorMessageEncoder<C extends Context = Context> extends MessageEn
 
     private async fetchMedia(type: MediaElementType, element: Element): Promise<Kritor.Element> {
         const url: string = element.attrs.src ?? element.attrs.url
-        let data: 'file' | 'fileName' | 'filePath' | 'fileUrl'
-        let file: Uint8Array
-        let fileUrl: string
-        if (url.startsWith('http://') || url.startsWith('https://')) {
-            fileUrl = url
-            data = 'fileUrl'
-        } else {
-            data = 'file'
-            const capture = /^data:([\w/.+-]+);base64,(.*)$/.exec(url)
-            if (capture?.[2]) {
-                file = new Uint8Array(Binary.fromBase64(capture[2]))
-            } else {
-                const res = await this.bot.ctx.http.file(url)
-                file = new Uint8Array(res.data)
-            }
-        }
         const key = type.toLowerCase() as Lowercase<typeof type>
-        const res = {
-            type,
-            [key]: {
-                data,
-                file,
-                fileUrl
-            }
+        const ret: Kritor.Element = { type, [key]: {} }
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            ret[key].data = 'fileUrl'
+            ret[key].fileUrl = url
+        } else {
+            ret[key].data = 'file'
+            const res = await this.bot.ctx.http.file(url)
+            ret[key].file = new Uint8Array(res.data)
         }
-        return res
+        return ret
     }
 
     async flush() {

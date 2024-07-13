@@ -12,28 +12,28 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> = KritorBot<C>> extends Adapter<C, B> {
     client: ReturnType<typeof this.init>
     private logger: Logger
+    private messageStream: grpc.ClientReadableStream<Kritor.EventStructure__Output>
+    private noticeStream: grpc.ClientReadableStream<Kritor.EventStructure__Output>
+    private requestStream: grpc.ClientReadableStream<Kritor.EventStructure__Output>
 
     constructor(ctx: C, private bot: B) {
         super(ctx)
         this.logger = bot.logger
         bot.adapter = this
+        this.client = this.init(this.bot.config.address)
+    }
+
+    async goOnline() {
+        if (!this.bot.isActive) return
+        const account = await this.bot.internal.getCurrentAccount()
+        this.bot.user = decodeLoginUser(account)
+        this.bot.online()
+        this.logger.info('connect to server: %c', this.bot.config.address)
     }
 
     async connect() {
         try {
-            this.client = this.init(this.bot.config.address)
-            this.ctx.on('dispose', () => {
-                for (const item of Object.values(this.client)) {
-                    grpc.closeClient(item)
-                }
-            })
-            const account = await this.bot.internal.getCurrentAccount()
-            this.registerActiveListener(Kritor.EventType.EVENT_TYPE_MESSAGE)
-            this.registerActiveListener(Kritor.EventType.EVENT_TYPE_NOTICE)
-            this.registerActiveListener(Kritor.EventType.EVENT_TYPE_REQUEST)
-            this.bot.user = decodeLoginUser(account)
-            this.bot.online()
-            this.logger.info('connect to server: %c', this.bot.config.address)
+            await this.goOnline()
         }
         catch (err) {
             if (err.message) this.logger.warn(err.message)
@@ -41,51 +41,70 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
             const timeout = this.bot.config.retryInterval
             this.logger.info(`will retry connection in ${Time.format(timeout)}...`)
             this.ctx.setTimeout(async () => await this.connect(), timeout)
+            return
         }
+        this.registerListener(Kritor.EventType.EVENT_TYPE_MESSAGE)
+        this.registerListener(Kritor.EventType.EVENT_TYPE_NOTICE)
+        this.registerListener(Kritor.EventType.EVENT_TYPE_REQUEST)
     }
 
     async disconnect() {
         this.bot.offline()
+        this.messageStream?.destroy?.()
+        this.noticeStream?.destroy?.()
+        this.requestStream?.destroy?.()
     }
 
-    private async onData(input: Kritor.EventStructure__Output, type: Kritor.EventType) {
-        // debug
-        //this.logger.info(input)
-        const session = await createSession(this.bot, input)
-        if (!session) return
-        session.setInternal('kritor', input)
-        this.bot.dispatch(session)
-    }
-
-    private onEnd(type: Kritor.EventType) {
-        this.ctx.setTimeout(() => this.registerActiveListener(type), this.bot.config.retryLazy)
-    }
-
-    private onError(err: Error, type: Kritor.EventType) {
-        this.logger.debug(err)
-    }
-
-    private registerActiveListener(type: Kritor.EventType) {
+    private registerListener(type: Kritor.EventType__Output) {
         const { eventClient } = this.client
-        const eventStream = eventClient.RegisterActiveListener({ type })
-        eventStream.on('data', async (chunk) => await this.onData(chunk, type))
-        eventStream.on('end', () => this.onEnd(type))
-        eventStream.on('error', (err) => this.onError(err, type))
-        this.ctx.on('dispose', () => {
-            eventStream.destroy()
+        const name: string = {
+            [Kritor.EventType.EVENT_TYPE_MESSAGE]: 'messageStream',
+            [Kritor.EventType.EVENT_TYPE_NOTICE]: 'noticeStream',
+            [Kritor.EventType.EVENT_TYPE_REQUEST]: 'requestStream'
+        }[type]
+        const eventStream = this[name] = eventClient.registerActiveListener({ type })
+
+        eventStream.on('data', async (chunk) => {
+            const session = await createSession(this.bot, chunk)
+            if (!session) return
+            session.setInternal('kritor', chunk)
+            this.bot.dispatch(session)
+        })
+
+        eventStream.on('end', () => {
+            eventStream.removeAllListeners()
+            this.bot.status = Universal.Status.RECONNECT
+            if (type === 1) {
+                this.logger.warn(`connection disconnected`)
+                this.logger.info(`will retry connection in ${Time.format(this.bot.config.retryInterval)}...`)
+            }
+            this.ctx.setTimeout(async () => {
+                this.registerListener(type)
+                if (this.bot.status !== Universal.Status.ONLINE && type === 1) {
+                    try {
+                        await this.goOnline()
+                    } catch { }
+                }
+            }, this.bot.config.retryLazy)
+        })
+
+        eventStream.on('error', (err) => {
+            this.logger.debug(err)
         })
     }
 
     private init(address: string) {
         // Forked from https://github.com/KarinJS/kritor-ts/blob/2f7cf14012ce72e8d92e6a0426acbf76be270ea0/src/api.ts#L45
 
-        const authenticationProtoGrpcType = this.getProtoGrpcType('auth/authentication.proto', [__dirname + '/kritor/protos']) as Kritor.AuthenticationProtoGrpcType
-        const coreProtoGrpcType = this.getProtoGrpcType('core/core.proto', [__dirname + '/kritor/protos']) as Kritor.CoreProtoGrpcType
-        const eventProtoGrpcType = this.getProtoGrpcType('event/event.proto', [__dirname + '/kritor/protos']) as Kritor.EventProtoGrpcType
-        const friendProtoGrpcType = this.getProtoGrpcType('friend/friend.proto', [__dirname + '/kritor/protos']) as Kritor.FriendProtoGrpcType
-        const groupProtoGrpcType = this.getProtoGrpcType('group/group.proto', [__dirname + '/kritor/protos']) as Kritor.GroupProtoGrpcType
-        const groupFileProtoGrpcType = this.getProtoGrpcType('file/group_file.proto', [__dirname + '/kritor/protos']) as Kritor.GroupFileProtoGrpcType
-        const messageProtoGrpcType = this.getProtoGrpcType('message/message.proto', [__dirname + '/kritor/protos']) as Kritor.MessageProtoGrpcType
+        const dir = __dirname + '/kritor/protos'
+
+        const authenticationProtoGrpcType = this.getProtoGrpcType('auth/authentication.proto', [dir]) as Kritor.AuthenticationProtoGrpcType
+        const coreProtoGrpcType = this.getProtoGrpcType('core/core.proto', [dir]) as Kritor.CoreProtoGrpcType
+        const eventProtoGrpcType = this.getProtoGrpcType('event/event.proto', [dir]) as Kritor.EventProtoGrpcType
+        const friendProtoGrpcType = this.getProtoGrpcType('friend/friend.proto', [dir]) as Kritor.FriendProtoGrpcType
+        const groupProtoGrpcType = this.getProtoGrpcType('group/group.proto', [dir]) as Kritor.GroupProtoGrpcType
+        const groupFileProtoGrpcType = this.getProtoGrpcType('file/group_file.proto', [dir]) as Kritor.GroupFileProtoGrpcType
+        const messageProtoGrpcType = this.getProtoGrpcType('message/message.proto', [dir]) as Kritor.MessageProtoGrpcType
         //const customizationProtoGrpcType = this.getProtoGrpcType('developer/customization.proto', [__dirname + '/kritor/protos']) as Kritor.CustomizationProtoGrpcType
         //const developerProtoGrpcType = this.getProtoGrpcType('developer/developer.proto', [__dirname + '/kritor/protos']) as Kritor.DeveloperProtoGrpcType
         //const guildProtoGrpcType = this.getProtoGrpcType('guild/guild.proto', [__dirname + '/kritor/protos']) as Kritor.GuildProtoGrpcType
@@ -129,9 +148,13 @@ export class KritorAdapter<C extends Context = Context, B extends KritorBot<C> =
         }
     }
 
-    private getProtoGrpcType(filename: string, dirs: string[]) {
-        const definition = protoLoader.loadSync(filename, { includeDirs: dirs })
-        return grpc.loadPackageDefinition(definition) as unknown
+    private getProtoGrpcType(filename: string, dirs: string[]): unknown {
+        const definition = protoLoader.loadSync(filename, {
+            includeDirs: dirs,
+            oneofs: true,
+            defaults: true
+        })
+        return grpc.loadPackageDefinition(definition)
     }
 
     private getClient<Subtype>(constructor: SubtypeConstructor<typeof grpc.Client, Subtype>, address: string, credential: grpc.ChannelCredentials) {
